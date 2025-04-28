@@ -1,26 +1,26 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense, lazy } from 'react';
+import { Layout } from './components/Layout';
 
-function App() {
+// Correct lazy-loaded named exports:
+const ImageUploader = lazy(() =>
+  import('./components/ImageUploader').then((mod) => ({
+    default: mod.ImageUploader,
+  }))
+);
+const PodcastUploader = lazy(() =>
+  import('./components/PodcastUploader').then((mod) => ({
+    default: mod.PodcastUploader,
+  }))
+);
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Layout>
+      <h1>Welcome to Keith's Roofing</h1>
+      <Suspense fallback={<div>Loading uploaders...</div>}>
+        <ImageUploader />
+        <PodcastUploader />
+      </Suspense>
+    </Layout>
   );
 }
-
-export default App;
