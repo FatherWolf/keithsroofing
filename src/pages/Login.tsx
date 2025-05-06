@@ -1,29 +1,26 @@
 // src/pages/Login.tsx
 import React from 'react';
-import { Button, Box, Typography } from '@mui/material';
-import { signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from '../firebase';
+import { Box, Paper, Typography } from '@mui/material';
+import { FirebaseAuth } from '../components/FirebaseAuth';
 
 export default function Login() {
-  const loginWithGoogle = () =>
-    signInWithPopup(auth, googleProvider).catch(console.error);
-
   return (
     <Box
       sx={{
         height: '100vh',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        bgcolor: 'background.default',
+        p: 2,
       }}
     >
-      <Typography variant="h4" mb={2}>
-        Admin Login
-      </Typography>
-      <Button variant="contained" onClick={loginWithGoogle}>
-        Sign in with Google
-      </Button>
+      <Paper sx={{ p: 4, maxWidth: 360, width: '100%' }} elevation={6}>
+        <Typography variant="h5" align="center" mb={3}>
+          Keith’s Roofing Admin
+        </Typography>
+        <FirebaseAuth />
+      </Paper>
     </Box>
   );
 }
