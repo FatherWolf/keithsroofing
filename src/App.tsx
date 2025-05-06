@@ -2,8 +2,11 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import Login from './pages/Login';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { AdminLayout } from './components/AdminLayout';
 
-// Lazy-loaded uploaders
+// Lazy-loaded admin uploaders
 const ImageUploader = lazy(() =>
   import('./components/ImageUploader').then((mod) => ({
     default: mod.ImageUploader,
@@ -15,7 +18,7 @@ const PodcastUploader = lazy(() =>
   }))
 );
 
-// Page components
+// Public pages
 function HomePage() {
   return (
     <>
@@ -40,14 +43,40 @@ function FAQPage() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/location" element={<LocationPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/faq" element={<FAQPage />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        {/* Public login */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Protected admin area */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <Suspense fallback={<div>Loading admin tools…</div>}>
+                  <ImageUploader />
+                  <PodcastUploader />
+                </Suspense>
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* All other routes use your public Layout */}
+        <Route
+          path="/*"
+          element={
+            <Layout>
+              <Routes>
+                <Route index element={<HomePage />} />
+                <Route path="location" element={<LocationPage />} />
+                <Route path="contact" element={<ContactPage />} />
+                <Route path="faq" element={<FAQPage />} />
+              </Routes>
+            </Layout>
+          }
+        />
+      </Routes>
     </BrowserRouter>
   );
 }
