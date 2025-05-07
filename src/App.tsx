@@ -5,6 +5,7 @@ import { Layout } from './components/Layout';
 import Login from './pages/Login';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminLayout } from './components/AdminLayout';
+import HomePage from './pages/HomePage';
 
 // Lazy-loaded admin uploaders
 const ImageUploader = lazy(() =>
@@ -19,17 +20,7 @@ const PodcastUploader = lazy(() =>
 );
 
 // Public pages
-function HomePage() {
-  return (
-    <>
-      <h1>Welcome to Keith's Roofing</h1>
-      <Suspense fallback={<div>Loading uploaders...</div>}>
-        <ImageUploader />
-        <PodcastUploader />
-      </Suspense>
-    </>
-  );
-}
+<HomePage />;
 function LocationPage() {
   return <h2>Our Locations</h2>;
 }
