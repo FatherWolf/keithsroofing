@@ -19,8 +19,5 @@
     // ← add these two
     "typeRoots": ["./node_modules/@types", "./types"]
   },
-  "include": [
-    "src",
-    "types" // ← make sure your custom declarations folder is included
-  ]
+  "include": ["src", "types"]
 }
