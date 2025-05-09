@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminLayout } from './components/AdminLayout';
 import HomePage from './pages/HomePage';
+import Location from './pages/Location';
 
 const ImageUploader = lazy(() =>
   import('./components/ImageUploader').then((m) => ({
@@ -18,9 +19,6 @@ const PodcastUploader = lazy(() =>
   }))
 );
 
-function LocationPage() {
-  return <h2>Our Locations</h2>;
-}
 function ContactPage() {
   return <h2>Contact Us</h2>;
 }
@@ -47,7 +45,7 @@ export default function App() {
           path="/location"
           element={
             <Layout>
-              <LocationPage />
+              <Location />
             </Layout>
           }
         />
