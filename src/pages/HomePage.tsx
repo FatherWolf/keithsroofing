@@ -1,5 +1,5 @@
 // src/pages/HomePage.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -8,11 +8,20 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Avatar from '@mui/material/Avatar';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 import { useTheme } from '@mui/material/styles';
 import { Seo } from '../components/Seo';
+import img1 from '../images/ProjectGal1.jpeg';
+import img2 from '../images/ProjectGal2.jpeg';
+import img3 from '../images/ProjectGal3.jpeg';
+import img4 from '../images/ProjectGal4.jpeg';
+import img5 from '../images/ProjectGal5.jpeg';
 
 export default function HomePage() {
   const theme = useTheme();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'RoofingContractor',
@@ -29,6 +38,7 @@ export default function HomePage() {
       addressCountry: 'US',
     },
   };
+
   const services = [
     {
       title: 'Custom Installations',
@@ -41,6 +51,8 @@ export default function HomePage() {
     { title: 'Luxury Materials', img: 'https://via.placeholder.com/300x200' },
     { title: 'Annual Inspections', img: 'https://via.placeholder.com/300x200' },
   ];
+
+  const galleryImages = [img1, img2, img3, img4, img5];
 
   return (
     <>
@@ -56,10 +68,7 @@ export default function HomePage() {
         aria-label="Hero"
         sx={{
           height: { xs: '60vh', md: '80vh' },
-          backgroundImage: `
-          linear-gradient(135deg, ${theme.palette.primary.dark}CC 0%, ${theme.palette.primary.main}CC 100%),
-          url(https://via.placeholder.com/1800x900)
-        `,
+          backgroundImage: `linear-gradient(135deg, ${theme.palette.primary.dark}CC 0%, ${theme.palette.primary.main}CC 100%), url(https://via.placeholder.com/1800x900)`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
@@ -159,23 +168,48 @@ export default function HomePage() {
               gridTemplateColumns: {
                 xs: 'repeat(2, 1fr)',
                 sm: 'repeat(3, 1fr)',
-                md: 'repeat(6, 1fr)',
+                md: 'repeat(5, 1fr)',
               },
             }}
           >
-            {Array.from({ length: 6 }).map((_, i) => (
-              <CardMedia
+            {galleryImages.map((src, i) => (
+              <Box
                 component="img"
+                src={src}
                 key={i}
-                image={`https://via.placeholder.com/200?text=Project+${i + 1}`}
                 alt={`Project ${i + 1}`}
                 loading="lazy"
-                sx={{ borderRadius: 1 }}
+                onClick={() => setSelectedImage(src)}
+                sx={{
+                  width: '100%',
+                  aspectRatio: '1/1',
+                  objectFit: 'cover',
+                  borderRadius: 1,
+                  cursor: 'pointer',
+                  transition: 'transform 0.3s',
+                  '&:hover': { transform: 'scale(1.05)' },
+                }}
               />
             ))}
           </Box>
         </Container>
       </Box>
+
+      {/* Lightbox Dialog */}
+      <Dialog
+        open={Boolean(selectedImage)}
+        onClose={() => setSelectedImage(null)}
+        maxWidth="lg"
+      >
+        <DialogContent sx={{ p: 0 }}>
+          <Box
+            component="img"
+            src={selectedImage || ''}
+            alt=""
+            sx={{ width: '100%' }}
+          />
+        </DialogContent>
+      </Dialog>
 
       {/* Testimonials Section */}
       <Container component="section" aria-label="Testimonials" sx={{ py: 8 }}>
