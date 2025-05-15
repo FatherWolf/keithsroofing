@@ -7,17 +7,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminLayout } from './components/AdminLayout';
 import HomePage from './pages/HomePage';
 import Location from './pages/Location';
-
-const ImageUploader = lazy(() =>
-  import('./components/ImageUploader').then((m) => ({
-    default: m.ImageUploader,
-  }))
-);
-const PodcastUploader = lazy(() =>
-  import('./components/PodcastUploader').then((m) => ({
-    default: m.PodcastUploader,
-  }))
-);
+import AdminPage from './pages/AdminPage';
 
 function ContactPage() {
   return <h2>Contact Us</h2>;
@@ -73,8 +63,7 @@ export default function App() {
             <ProtectedRoute redirectTo="/login">
               <AdminLayout>
                 <Suspense fallback={<div>Loading admin tools…</div>}>
-                  <ImageUploader />
-                  <PodcastUploader />
+                  <AdminPage />
                 </Suspense>
               </AdminLayout>
             </ProtectedRoute>

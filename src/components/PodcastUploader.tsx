@@ -3,7 +3,11 @@ import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Box, Typography, Button } from '@mui/material';
 
-export function PodcastUploader() {
+interface PodcastUploaderProps {
+  onUpload: (files: File[]) => void;
+}
+
+export function PodcastUploader({ onUpload }: PodcastUploaderProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -21,6 +25,7 @@ export function PodcastUploader() {
     setUploading(true);
     // TODO: Replace with real upload logic
     setTimeout(() => {
+      onUpload(files);
       setUploading(false);
       setFiles([]);
     }, 1500);

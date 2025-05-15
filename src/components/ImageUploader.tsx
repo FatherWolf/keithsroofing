@@ -1,9 +1,12 @@
-// src/components/ImageUploader.tsx
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Box, Typography, Button } from '@mui/material';
 
-export function ImageUploader() {
+interface ImageUploaderProps {
+  onUpload: (files: File[]) => void;
+}
+
+export function ImageUploader({ onUpload }: ImageUploaderProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
 
@@ -21,6 +24,7 @@ export function ImageUploader() {
     setUploading(true);
     // TODO: Replace with real upload logic (e.g. Firebase Storage)
     setTimeout(() => {
+      onUpload(files);
       setUploading(false);
       setFiles([]);
     }, 1500);

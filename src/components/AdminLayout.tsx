@@ -1,4 +1,3 @@
-// src/components/AdminLayout.tsx
 import React from 'react';
 import { AppBar, Toolbar, IconButton, Button, Box } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
