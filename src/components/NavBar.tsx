@@ -2,18 +2,18 @@
 import React, { useState } from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import Box from '@mui/material/Box';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { useLocation, Link as RouterLink } from 'react-router-dom';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
@@ -25,17 +25,33 @@ const NAV_ITEMS = [
 export function NavBar() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
   const toggle = () => setOpen((o) => !o);
+
+  const linkStyle = (href: string) => ({
+    color: '#FFFFFF',
+    textTransform: 'none',
+    borderBottom:
+      location.pathname === href || hovered === href
+        ? `2px solid ${theme.palette.primary.main}`
+        : '2px solid transparent',
+    transition: 'border-bottom-color 0.2s',
+    '&:hover': { borderBottomColor: theme.palette.primary.main },
+  });
 
   return (
     <>
-      <AppBar position="static" color="transparent" elevation={0}>
+      <AppBar
+        position="static"
+        sx={{ backgroundColor: '#0B090A', boxShadow: 'none' }}
+      >
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 4 } }}>
-          {/* Logo spot */}
+          {/* Logo */}
           <Box
-            component="a"
-            href="/"
+            component={RouterLink}
+            to="/"
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -45,47 +61,51 @@ export function NavBar() {
             <Box
               component="img"
               src="/logo.png"
-              alt="Keith's Roofing Logo"
-              sx={{ height: 48, width: 'auto', mr: 1 }}
+              alt="Logo"
+              sx={{ height: 48, width: 'auto' }}
             />
-            {!isMobile && (
-              <Typography
-                variant="h6"
-                sx={{ color: theme.palette.text.primary, fontWeight: 700 }}
-              >
-                Keith's Roofing
-              </Typography>
-            )}
           </Box>
 
-          {/* Nav links or menu icon */}
-          {isMobile ? (
-            <IconButton onClick={toggle} edge="end" aria-label="menu">
-              <MoreVertIcon fontSize="large" />
-            </IconButton>
-          ) : (
-            <Box sx={{ display: 'flex', gap: 2 }}>
+          {/* Desktop Nav */}
+          {!isMobile && (
+            <Box sx={{ display: 'flex', gap: 3 }}>
               {NAV_ITEMS.map((item) => (
                 <Button
-                  key={item.label}
-                  href={item.href}
-                  sx={{ textTransform: 'none', fontSize: '1rem' }}
+                  key={item.href}
+                  component={RouterLink}
+                  to={item.href}
+                  sx={linkStyle(item.href)}
+                  onMouseEnter={() => setHovered(item.href)}
+                  onMouseLeave={() => setHovered(null)}
                 >
                   {item.label}
                 </Button>
               ))}
             </Box>
           )}
+
+          {/* Mobile Menu Icon */}
+          {isMobile && (
+            <IconButton onClick={toggle} sx={{ color: '#FFFFFF' }}>
+              <MoreVertIcon fontSize="large" />
+            </IconButton>
+          )}
         </Toolbar>
       </AppBar>
 
-      {/* Mobile drawer */}
+      {/* Mobile Drawer */}
       <Drawer anchor="left" open={open} onClose={toggle}>
         <Box sx={{ width: 240 }} role="presentation" onClick={toggle}>
           <List>
             {NAV_ITEMS.map((item) => (
-              <ListItem key={item.label} disablePadding>
-                <ListItemButton component="a" href={item.href}>
+              <ListItem key={item.href} disablePadding>
+                <ListItemButton
+                  component={RouterLink}
+                  to={item.href}
+                  sx={linkStyle(item.href)}
+                  onMouseEnter={() => setHovered(item.href)}
+                  onMouseLeave={() => setHovered(null)}
+                >
                   <ListItemText primary={item.label} />
                 </ListItemButton>
               </ListItem>
