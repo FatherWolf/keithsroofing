@@ -10,6 +10,8 @@ import CardMedia from '@mui/material/CardMedia';
 import Avatar from '@mui/material/Avatar';
 import { useTheme } from '@mui/material/styles';
 import { Seo } from '../components/Seo';
+import GoogleReviews from '../components/GoogleReview';
+import promoVideo from '../images/Advideo.mp4';
 
 // ← your real hero image here:
 import heroImage from '../images/IMG_1670.jpeg';
@@ -50,22 +52,27 @@ export default function HomePage() {
       {/* Structured Data */}
       <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
 
-      {/* Hero Image Slot */}
       <Box
         component="section"
         aria-label="Hero"
         sx={{
           position: 'relative',
+          width: '100vw',
+          left: '50%',
+          ml: '-50vw',
           height: { xs: '60vh', md: '75vh' },
           backgroundImage: `url(${heroImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: theme.palette.primary.contrastText,
           textAlign: 'center',
           px: 2,
+          overflow: 'hidden',
+          zIndex: 0,
         }}
       >
         {/* Gradient overlay */}
@@ -75,10 +82,12 @@ export default function HomePage() {
             inset: 0,
             background:
               'linear-gradient(135deg, rgba(102,7,8,0.8) 0%, rgba(186,24,27,0.8) 100%)',
+            zIndex: 1,
           }}
         />
-        <Box sx={{ position: 'relative', zIndex: 1, maxWidth: 700 }}>
-          <Typography variant="h1" component="h1" gutterBottom>
+        {/* Hero text/button */}
+        <Box sx={{ position: 'relative', zIndex: 2, maxWidth: 700 }}>
+          <Typography variant="h1" gutterBottom>
             Keith’s Roofing
           </Typography>
           <Typography variant="h4" component="h2" mb={4}>
@@ -95,10 +104,45 @@ export default function HomePage() {
         </Box>
       </Box>
 
-      {/* Services on soft white */}
+      {/* Promotional Video Section */}
       <Box
         component="section"
-        sx={{ bgcolor: theme.palette.background.paper, py: 8 }}
+        aria-label="Promo Video"
+        sx={{
+          bgcolor: theme.palette.grey[50],
+          py: 8,
+          textAlign: 'center',
+        }}
+      >
+        <Container>
+          <Typography variant="h3" gutterBottom sx={{ fontWeight: 600 }}>
+            Who We Are
+          </Typography>
+
+          {/* HTML5 video */}
+          <Box
+            component="video"
+            controls
+            src={promoVideo} // ← your video file path
+            sx={{
+              width: '100%',
+              maxWidth: 800,
+              height: 'auto',
+              borderRadius: 2,
+              boxShadow: 3,
+            }}
+          />
+        </Container>
+      </Box>
+      {/* Services Section (now scrolling over the banner) */}
+      <Box
+        component="section"
+        sx={{
+          position: 'relative',
+          zIndex: 1,
+          bgcolor: theme.palette.background.paper,
+          py: 8,
+        }}
       >
         <Container>
           <Typography
@@ -144,7 +188,6 @@ export default function HomePage() {
           </Box>
         </Container>
       </Box>
-
       {/* Gallery on light grey */}
       <Box component="section" sx={{ bgcolor: theme.palette.grey[100], py: 8 }}>
         <Container>
@@ -188,51 +231,17 @@ export default function HomePage() {
           </Box>
         </Container>
       </Box>
-
       {/* Testimonials on soft white */}
       <Box
         component="section"
         sx={{ bgcolor: theme.palette.background.paper, py: 8 }}
       >
-        <Container>
-          <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-            sx={{ fontWeight: 600 }}
-          >
-            What Our Clients Say
-          </Typography>
-          <Box
-            sx={{
-              display: 'grid',
-              gap: 4,
-              mt: 4,
-              gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-            }}
-          >
-            {[1, 2, 3].map((i) => (
-              <Box key={i} textAlign="center" p={2}>
-                <Avatar
-                  src={`https://via.placeholder.com/72?text=Client+${i}`}
-                  alt={`Client ${i}`}
-                  sx={{ width: 72, height: 72, mx: 'auto', mb: 2 }}
-                />
-                <Typography
-                  variant="body1"
-                  gutterBottom
-                  sx={{ fontStyle: 'italic' }}
-                >
-                  “Keith’s Roofing delivered exceptional quality and service.
-                  Highly recommended!”
-                </Typography>
-                <Typography variant="subtitle2">— Client {i}</Typography>
-              </Box>
-            ))}
-          </Box>
-        </Container>
+        <GoogleReviews
+          placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
+          apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
+          maxReviews={5}
+        />
       </Box>
-
       {/* Final CTA on primary red */}
       <Box
         component="section"
