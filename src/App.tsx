@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import Login from './pages/Login';
@@ -8,10 +8,12 @@ import { AdminLayout } from './components/AdminLayout';
 import HomePage from './pages/HomePage';
 import Location from './pages/Location';
 import AdminPage from './pages/AdminPage';
-import FaqPage from './pages/FaqPage';
 
 function ContactPage() {
   return <h2>Contact Us</h2>;
+}
+function FAQPage() {
+  return <h2>FAQ</h2>;
 }
 
 export default function App() {
@@ -49,7 +51,7 @@ export default function App() {
           path="/faq"
           element={
             <Layout>
-              <FaqPage />
+              <FAQPage />
             </Layout>
           }
         />
