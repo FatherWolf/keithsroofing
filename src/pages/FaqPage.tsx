@@ -1,198 +1,150 @@
-// src/pages/FAQPage.tsx
-
 import React, { useEffect, useState } from 'react';
 import {
   Box,
+  Button,
   Container,
+  TextField,
   Typography,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Card,
-  CardMedia,
-  CircularProgress,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { styled } from '@mui/material/styles';
-import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
-import { Seo } from '../components/Seo';
-// import { storage } from '../firebase'; // <-- make sure you export 'storage' from your firebase setup
+import { ImageUploader } from '../components/ImageUploader';
+import { PodcastUploader } from '../components/PodcastUploader';
+import {
+  collection,
+  getDocs,
+  addDoc,
+  Timestamp,
+  DocumentData,
+} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage, auth } from '../firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
-// ---- FAQ QUESTIONS ----
-// Replace or extend this list with your real FAQs.
-const faqQuestions: Array<{ question: string; answer: string }> = [
-  {
-    question: 'What areas do you serve?',
-    answer:
-      'We serve Hot Springs, Hot Springs Village, and surrounding Garland County areas. If you’re outside of that zone, reach out and we’ll let you know how we can help!',
-  },
-  {
-    question: 'How can I get a free estimate?',
-    answer:
-      'Click “Get a Quote” from the top navigation, fill out the form, and we’ll schedule a time to inspect your roof within 48 hours. It’s free and no‐obligation.',
-  },
-  {
-    question: 'What types of roofing materials do you offer?',
-    answer:
-      'We carry asphalt shingles, metal roofing, and premium cedar shakes. We also install specialty architectural shingles for a high‐end look.',
-  },
-  {
-    question: 'Do you offer emergency repairs?',
-    answer:
-      'Yes. We’re available 24/7 for storm damage and emergency tarping services. Call our emergency hotline at (501) 922-2020 any time.',
-  },
-  // …add as many as you like…
-];
+interface FaqItem {
+  id: string;
+  question: string;
+  answer: string;
+  imageUrl?: string;
+  podcastUrl?: string;
+}
 
-// Styled container for the image gallery
-const GalleryContainer = styled(Box)(({ theme }) => ({
-  display: 'grid',
-  gap: theme.spacing(2),
-  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-  marginTop: theme.spacing(4),
-}));
-
-// Styled container for the podcast list
-const PodcastContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  gap: theme.spacing(2),
-  marginTop: theme.spacing(4),
-}));
-
-export default function FAQPage() {
-  const [photoURLs, setPhotoURLs] = useState<string[]>([]);
-  const [podcastURLs, setPodcastURLs] = useState<string[]>([]);
-  const [loadingPhotos, setLoadingPhotos] = useState(true);
-  const [loadingPodcasts, setLoadingPodcasts] = useState(true);
+export default function FaqPage() {
+  const [faqs, setFaqs] = useState<FaqItem[]>([]);
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [imageUrl, setImageUrl] = useState<string>();
+  const [podcastUrl, setPodcastUrl] = useState<string>();
+  const [user] = useAuthState(auth);
 
   useEffect(() => {
-    // 1) FETCH FAQ PHOTOS
-    const photosRef = ref(storage, 'faq-photos');
-    listAll(photosRef)
-      .then((res) => {
-        // getDownloadURL for each item in the folder
-        const urlPromises = res.items.map((itemRef) => getDownloadURL(itemRef));
-        return Promise.all(urlPromises);
-      })
-      .then((urls) => {
-        setPhotoURLs(urls);
-      })
-      .catch((err) => {
-        console.error('Error listing FAQ photos:', err);
-      })
-      .finally(() => {
-        setLoadingPhotos(false);
-      });
-
-    // 2) FETCH FAQ PODCASTS
-    const podcastsRef = ref(storage, 'faq-podcasts');
-    listAll(podcastsRef)
-      .then((res) => {
-        const urlPromises = res.items.map((itemRef) => getDownloadURL(itemRef));
-        return Promise.all(urlPromises);
-      })
-      .then((urls) => {
-        setPodcastURLs(urls);
-      })
-      .catch((err) => {
-        console.error('Error listing FAQ podcasts:', err);
-      })
-      .finally(() => {
-        setLoadingPodcasts(false);
-      });
+    const fetchFaqs = async () => {
+      const snap = await getDocs(collection(db, 'faqs'));
+      const items: FaqItem[] = snap.docs.map((d) => ({
+        id: d.id,
+        ...(d.data() as DocumentData),
+      })) as FaqItem[];
+      setFaqs(items);
+    };
+    fetchFaqs();
   }, []);
 
+  const uploadFile = async (file: File, folder: string) => {
+    const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
+  };
+
+  const handleImageUpload = async (files: File[]) => {
+    if (files.length === 0) return;
+    const url = await uploadFile(files[0], 'faq_images');
+    setImageUrl(url);
+  };
+
+  const handlePodcastUpload = async (files: File[]) => {
+    if (files.length === 0) return;
+    const url = await uploadFile(files[0], 'faq_podcasts');
+    setPodcastUrl(url);
+  };
+
+  const handleAddFaq = async () => {
+    if (!question || !answer) return;
+    const docRef = await addDoc(collection(db, 'faqs'), {
+      question,
+      answer,
+      imageUrl: imageUrl || null,
+      podcastUrl: podcastUrl || null,
+      createdAt: Timestamp.now(),
+    });
+    setFaqs((prev) => [
+      {
+        id: docRef.id,
+        question,
+        answer,
+        imageUrl,
+        podcastUrl,
+      },
+      ...prev,
+    ]);
+    setQuestion('');
+    setAnswer('');
+    setImageUrl(undefined);
+    setPodcastUrl(undefined);
+  };
+
   return (
-    <>
-      <Seo
-        title="Keith’s Roofing | Frequently Asked Questions"
-        description="Find answers to common roofing questions, view our gallery of completed jobs, and listen to our podcast episodes."
-      />
-
-      <Container sx={{ py: 6 }}>
-        {/* FAQ HEADER */}
-        <Typography
-          variant="h3"
-          align="center"
-          gutterBottom
-          sx={{ fontWeight: 600 }}
-        >
-          Frequently Asked Questions
-        </Typography>
-
-        {/* ACCORDION LIST */}
-        {faqQuestions.map((faq, idx) => (
-          <Accordion key={idx} sx={{ mb: 2 }}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="subtitle1" sx={{ fontWeight: 500 }}>
-                {faq.question}
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography variant="body1">{faq.answer}</Typography>
-            </AccordionDetails>
-          </Accordion>
+    <Container sx={{ py: 4 }}>
+      <Typography variant="h4" gutterBottom>
+        Frequently Asked Questions
+      </Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        {faqs.map((f) => (
+          <Box key={f.id} sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>
+            <Typography variant="h6">{f.question}</Typography>
+            <Typography variant="body2" paragraph>
+              {f.answer}
+            </Typography>
+            {f.imageUrl && (
+              <Box
+                component="img"
+                src={f.imageUrl}
+                alt="FAQ related"
+                sx={{ maxWidth: '100%', mb: 1 }}
+              />
+            )}
+            {f.podcastUrl && (
+              <Box component="audio" controls src={f.podcastUrl} sx={{ width: '100%' }} />
+            )}
+          </Box>
         ))}
+      </Box>
 
-        {/* UPLOADED PHOTO GALLERY */}
-        <Typography variant="h4" gutterBottom sx={{ mt: 6, fontWeight: 600 }}>
-          FAQ Photo Gallery
-        </Typography>
-        {loadingPhotos ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            <CircularProgress />
-          </Box>
-        ) : photoURLs.length ? (
-          <GalleryContainer>
-            {photoURLs.map((url, i) => (
-              <Card key={i} elevation={3}>
-                <CardMedia
-                  component="img"
-                  src={url}
-                  alt={`FAQ Photo ${i + 1}`}
-                  loading="lazy"
-                  sx={{ height: 180, objectFit: 'cover' }}
-                />
-              </Card>
-            ))}
-          </GalleryContainer>
-        ) : (
-          <Typography color="text.secondary" sx={{ mt: 2 }}>
-            No FAQ photos have been uploaded yet.
+      {user && (
+        <Box mt={4} sx={{ borderTop: 1, borderColor: 'divider', pt: 3 }}>
+          <Typography variant="h5" gutterBottom>
+            Add FAQ
           </Typography>
-        )}
-
-        {/* UPLOADED PODCASTS */}
-        <Typography variant="h4" gutterBottom sx={{ mt: 6, fontWeight: 600 }}>
-          FAQ Podcast Episodes
-        </Typography>
-        {loadingPodcasts ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-            <CircularProgress />
-          </Box>
-        ) : podcastURLs.length ? (
-          <PodcastContainer>
-            {podcastURLs.map((url, i) => (
-              <Box key={i}>
-                <Typography variant="subtitle2" gutterBottom>
-                  Episode {i + 1}
-                </Typography>
-                <Box
-                  component="audio"
-                  controls
-                  src={url}
-                  sx={{ width: '100%' }}
-                />
-              </Box>
-            ))}
-          </PodcastContainer>
-        ) : (
-          <Typography color="text.secondary" sx={{ mt: 2 }}>
-            No FAQ podcasts have been uploaded yet.
-          </Typography>
-        )}
-      </Container>
-    </>
+          <TextField
+            label="Question"
+            fullWidth
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            label="Answer"
+            fullWidth
+            multiline
+            minRows={3}
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+          <ImageUploader onUpload={handleImageUpload} />
+          <PodcastUploader onUpload={handlePodcastUpload} />
+          <Button variant="contained" onClick={handleAddFaq}>
+            Save FAQ
+          </Button>
+        </Box>
+      )}
+    </Container>
   );
 }
