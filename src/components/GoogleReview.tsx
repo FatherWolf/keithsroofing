@@ -44,7 +44,10 @@ export default function GoogleReviews({
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.onload = fetchReviews;
-      script.onerror = () => setError('Failed to load Google Maps');
+      script.onerror = () => {
+        setError(false as unknown as string | null);
+        setLoading(false);
+      };
       document.head.appendChild(script);
     } else {
       fetchReviews();
