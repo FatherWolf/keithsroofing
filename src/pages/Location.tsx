@@ -118,7 +118,7 @@ export default function LocationPage() {
               Visit Our Hot Springs Showroom
             </Typography>
             <Typography variant="body1" paragraph>
-              We’re located at 1234 E Grand Ave, right next to the Walmart
+              We’re located at 3560 N Hwy 7 B, right next to the Walmart
               Supercenter in Hot Springs, Arkansas. Stop by to explore our
               luxury roofing materials and discuss your project with our
               experts.

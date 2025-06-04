@@ -12,6 +12,7 @@ import { useTheme } from '@mui/material/styles';
 import { Seo } from '../components/Seo';
 import GoogleReviews from '../components/GoogleReview';
 import promoVideo from '../images/Advideo.mp4';
+import CertScroll from '../components/CertScroll';
 
 // ← your real hero image here:
 import heroImage from '../images/IMG_1670.jpeg';
@@ -189,6 +190,19 @@ export default function HomePage() {
         </Container>
       </Box>
       {/* Gallery on light grey */}
+      <Box
+        component="section"
+        sx={{
+          bgcolor: theme.palette.grey[100],
+          py: 8,
+          textAlign: 'center',
+        }}
+      >
+        <Container>
+          <CertScroll />
+        </Container>
+      </Box>
+
       <Box component="section" sx={{ bgcolor: theme.palette.grey[100], py: 8 }}>
         <Container>
           <Typography
