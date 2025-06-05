@@ -16,11 +16,24 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { ImageUploader } from '../components/ImageUploader';
 import { PodcastUploader } from '../components/PodcastUploader';
+import {
+  collection,
+  getDocs,
+  addDoc,
+  deleteDoc,
+  doc,
+  updateDoc,
+  Timestamp,
+  DocumentData,
+} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage } from '../firebase';
 
 interface MediaItem {
   id: string;
   name: string;
-  url?: string;
+  url: string;
+  type: 'image' | 'podcast';
 }
 
 export default function AdminPage() {
@@ -28,39 +41,80 @@ export default function AdminPage() {
   const [images, setImages] = useState<MediaItem[]>([]);
   const [podcasts, setPodcasts] = useState<MediaItem[]>([]);
 
-  // Simulate fetching existing uploads
+  // Load existing media from Firestore
   useEffect(() => {
-    // TODO: fetch real data from your backend/storage
-    setImages([]);
-    setPodcasts([]);
+    const fetchMedia = async () => {
+      const snap = await getDocs(collection(db, 'media'));
+      const items: MediaItem[] = snap.docs.map((d) => ({
+        id: d.id,
+        ...(d.data() as DocumentData),
+      })) as MediaItem[];
+      setImages(items.filter((i) => i.type === 'image'));
+      setPodcasts(items.filter((i) => i.type === 'podcast'));
+    };
+    fetchMedia();
   }, []);
 
-  const handleDelete = (id: string, type: 'image' | 'podcast') => {
+  const handleDelete = async (id: string, type: 'image' | 'podcast') => {
+    await deleteDoc(doc(db, 'media', id));
     if (type === 'image') setImages(images.filter((i) => i.id !== id));
     else setPodcasts(podcasts.filter((p) => p.id !== id));
-    // TODO: call API to delete
   };
 
-  const handleReplace = (id: string, file: File, type: 'image' | 'podcast') => {
-    // TODO: upload new file then update state
-    console.log(`Replace ${type} ${id} with`, file);
+  const handleReplace = async (
+    id: string,
+    file: File,
+    type: 'image' | 'podcast'
+  ) => {
+    const url = await uploadFile(
+      file,
+      type === 'image' ? 'uploads/images' : 'uploads/podcasts'
+    );
+    await updateDoc(doc(db, 'media', id), {
+      url,
+      name: file.name,
+      updatedAt: Timestamp.now(),
+    });
+    const updater = (items: MediaItem[]) =>
+      items.map((i) => (i.id === id ? { ...i, url, name: file.name } : i));
+    if (type === 'image') setImages(updater);
+    else setPodcasts(updater);
   };
 
-  const handleImageUpload = (files: File[]) => {
-    // After uploading, add to list
-    const newItems = files.map((f) => ({
-      id: Date.now() + f.name,
-      name: f.name,
-    }));
-    setImages((prev) => [...newItems, ...prev]);
+  const uploadFile = async (file: File, folder: string) => {
+    const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
   };
 
-  const handlePodcastUpload = (files: File[]) => {
-    const newItems = files.map((f) => ({
-      id: Date.now() + f.name,
-      name: f.name,
-    }));
-    setPodcasts((prev) => [...newItems, ...prev]);
+  const handleImageUpload = async (files: File[]) => {
+    const uploaded: MediaItem[] = [];
+    for (const file of files) {
+      const url = await uploadFile(file, 'uploads/images');
+      const docRef = await addDoc(collection(db, 'media'), {
+        type: 'image',
+        name: file.name,
+        url,
+        createdAt: Timestamp.now(),
+      });
+      uploaded.push({ id: docRef.id, name: file.name, url, type: 'image' });
+    }
+    setImages((prev) => [...uploaded, ...prev]);
+  };
+
+  const handlePodcastUpload = async (files: File[]) => {
+    const uploaded: MediaItem[] = [];
+    for (const file of files) {
+      const url = await uploadFile(file, 'uploads/podcasts');
+      const docRef = await addDoc(collection(db, 'media'), {
+        type: 'podcast',
+        name: file.name,
+        url,
+        createdAt: Timestamp.now(),
+      });
+      uploaded.push({ id: docRef.id, name: file.name, url, type: 'podcast' });
+    }
+    setPodcasts((prev) => [...uploaded, ...prev]);
   };
 
   return (
