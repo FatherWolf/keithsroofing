@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -5,6 +6,7 @@ import {
   Container,
   TextField,
   Typography,
+
 } from '@mui/material';
 import { ImageUploader } from '../components/ImageUploader';
 import { PodcastUploader } from '../components/PodcastUploader';
@@ -15,7 +17,9 @@ import {
   Timestamp,
   DocumentData,
 } from 'firebase/firestore';
+
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 import { db, storage, auth } from '../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -23,6 +27,7 @@ interface FaqItem {
   id: string;
   question: string;
   answer: string;
+
   imageUrl?: string;
   podcastUrl?: string;
 }
@@ -32,6 +37,7 @@ interface MediaItem {
   name: string;
   url: string;
   type: 'image' | 'podcast';
+
 }
 
 export default function FaqPage() {
@@ -96,11 +102,13 @@ export default function FaqPage() {
         id: docRef.id,
         question,
         answer,
+
         imageUrl,
         podcastUrl,
       },
       ...prev,
     ]);
+
     setQuestion('');
     setAnswer('');
     setImageUrl(undefined);
@@ -110,16 +118,19 @@ export default function FaqPage() {
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" gutterBottom>
+
         Frequently Asked Questions
       </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {faqs.map((f) => (
           <Box key={f.id} sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>
+
             <Typography variant="h6">{f.question}</Typography>
             <Typography variant="body2" paragraph>
               {f.answer}
             </Typography>
             {f.imageUrl && (
+
               <Box
                 component="img"
                 src={f.imageUrl}
@@ -171,6 +182,7 @@ export default function FaqPage() {
           <Typography variant="h5" gutterBottom>
             Add FAQ
           </Typography>
+
           <TextField
             label="Question"
             fullWidth
@@ -178,6 +190,7 @@ export default function FaqPage() {
             onChange={(e) => setQuestion(e.target.value)}
             sx={{ mb: 2 }}
           />
+
           <TextField
             label="Answer"
             fullWidth
@@ -190,6 +203,7 @@ export default function FaqPage() {
           <ImageUploader onUpload={handleImageUpload} />
           <PodcastUploader onUpload={handlePodcastUpload} />
           <Button variant="contained" onClick={handleAddFaq}>
+
             Save FAQ
           </Button>
         </Box>

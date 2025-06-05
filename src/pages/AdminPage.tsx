@@ -11,7 +11,9 @@ import {
   Avatar,
   ListItemText,
   IconButton,
+  Button,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { ImageUploader } from '../components/ImageUploader';
@@ -41,6 +43,7 @@ export default function AdminPage() {
   const [images, setImages] = useState<MediaItem[]>([]);
   const [podcasts, setPodcasts] = useState<MediaItem[]>([]);
 
+
   // Load existing media from Firestore
   useEffect(() => {
     const fetchMedia = async () => {
@@ -53,12 +56,14 @@ export default function AdminPage() {
       setPodcasts(items.filter((i) => i.type === 'podcast'));
     };
     fetchMedia();
+
   }, []);
 
   const handleDelete = async (id: string, type: 'image' | 'podcast') => {
     await deleteDoc(doc(db, 'media', id));
     if (type === 'image') setImages(images.filter((i) => i.id !== id));
     else setPodcasts(podcasts.filter((p) => p.id !== id));
+
   };
 
   const handleReplace = async (
@@ -100,6 +105,7 @@ export default function AdminPage() {
       uploaded.push({ id: docRef.id, name: file.name, url, type: 'image' });
     }
     setImages((prev) => [...uploaded, ...prev]);
+
   };
 
   const handlePodcastUpload = async (files: File[]) => {
@@ -122,11 +128,26 @@ export default function AdminPage() {
       <Typography variant="h4" gutterBottom>
         Admin Dashboard
       </Typography>
-      <Tabs value={tabIndex} onChange={(_, v) => setTabIndex(v)}>
+
+      {/* ----------------------------------------------------------- */}
+      {/* View Public FAQ Button */}
+      {/* ----------------------------------------------------------- */}
+      <Box mb={2}>
+        <Button component={Link} to="/faq" variant="outlined" color="primary">
+          View Public FAQ
+        </Button>
+      </Box>
+
+      {/* ----------------------------------------------------------- */}
+      {/* Tabs: Images / Podcasts / (you could add a 3rd like “Manage FAQ” here) */}
+      {/* ----------------------------------------------------------- */}
+      <Tabs value={tabIndex} onChange={(_, newIndex) => setTabIndex(newIndex)}>
         <Tab label="Images" />
         <Tab label="Podcasts" />
       </Tabs>
+
       <Box mt={2}>
+        {/* ===== Images Tab ===== */}
         {tabIndex === 0 && (
           <Box>
             <ImageUploader onUpload={handleImageUpload} />
@@ -163,6 +184,7 @@ export default function AdminPage() {
           </Box>
         )}
 
+        {/* ===== Podcasts Tab ===== */}
         {tabIndex === 1 && (
           <Box>
             <PodcastUploader onUpload={handlePodcastUpload} />
@@ -190,7 +212,7 @@ export default function AdminPage() {
                   }
                 >
                   <ListItemAvatar>
-                    <Avatar>{/* optional icon */}</Avatar>
+                    <Avatar />
                   </ListItemAvatar>
                   <ListItemText primary={p.name} />
                 </ListItem>
