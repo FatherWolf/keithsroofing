@@ -1,4 +1,4 @@
-// src/pages/FaqPage.tsx
+
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -6,9 +6,7 @@ import {
   Container,
   TextField,
   Typography,
-  CircularProgress,
-  Card,
-  CardMedia,
+
 } from '@mui/material';
 import { ImageUploader } from '../components/ImageUploader';
 import { PodcastUploader } from '../components/PodcastUploader';
@@ -19,7 +17,9 @@ import {
   Timestamp,
   DocumentData,
 } from 'firebase/firestore';
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
+
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
 import { db, storage, auth } from '../firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 
@@ -27,8 +27,17 @@ interface FaqItem {
   id: string;
   question: string;
   answer: string;
-  imageUrl?: string | null;
-  podcastUrl?: string | null;
+
+  imageUrl?: string;
+  podcastUrl?: string;
+}
+
+interface MediaItem {
+  id: string;
+  name: string;
+  url: string;
+  type: 'image' | 'podcast';
+
 }
 
 export default function FaqPage() {
@@ -37,72 +46,48 @@ export default function FaqPage() {
   const [answer, setAnswer] = useState('');
   const [imageUrl, setImageUrl] = useState<string>();
   const [podcastUrl, setPodcastUrl] = useState<string>();
-  const [uploadingImage, setUploadingImage] = useState(false);
-  const [uploadingPodcast, setUploadingPodcast] = useState(false);
-
+  const [images, setImages] = useState<MediaItem[]>([]);
+  const [podcasts, setPodcasts] = useState<MediaItem[]>([]);
   const [user] = useAuthState(auth);
 
-  // Fetch existing FAQs from Firestore
   useEffect(() => {
-    const fetchFaqs = async () => {
-      const snap = await getDocs(collection(db, 'faqs'));
-      const items: FaqItem[] = snap.docs.map((d) => ({
+    const fetchData = async () => {
+      const faqSnap = await getDocs(collection(db, 'faqs'));
+      const faqItems: FaqItem[] = faqSnap.docs.map((d) => ({
         id: d.id,
         ...(d.data() as DocumentData),
       })) as FaqItem[];
-      setFaqs(items);
+      setFaqs(faqItems);
+
+      const mediaSnap = await getDocs(collection(db, 'media'));
+      const mediaItems: MediaItem[] = mediaSnap.docs.map((d) => ({
+        id: d.id,
+        ...(d.data() as DocumentData),
+      })) as MediaItem[];
+      setImages(mediaItems.filter((m) => m.type === 'image'));
+      setPodcasts(mediaItems.filter((m) => m.type === 'podcast'));
     };
-    fetchFaqs();
+    fetchData();
   }, []);
 
-  // Helper: upload a single file to Storage under `folder/…` and return its public URL
-  const uploadFile = (file: File, folder: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on(
-        'state_changed',
-        () => {
-          // You could track progress here if desired
-        },
-        (error) => {
-          console.error('Upload error:', error);
-          reject(error);
-        },
-        async () => {
-          const url = await getDownloadURL(uploadTask.snapshot.ref);
-          resolve(url);
-        }
-      );
-    });
+  const uploadFile = async (file: File, folder: string) => {
+    const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
   };
 
-  // Called by <ImageUploader /> when admin selects files
   const handleImageUpload = async (files: File[]) => {
-    setUploadingImage(true);
-    try {
-      const url = await uploadFile(files[0], 'faq_images');
-      setImageUrl(url);
-    } catch (err) {
-      console.error('Error uploading image:', err);
-    }
-    setUploadingImage(false);
+    if (files.length === 0) return;
+    const url = await uploadFile(files[0], 'faq_images');
+    setImageUrl(url);
   };
 
-  // Called by <PodcastUploader /> when admin selects audio
   const handlePodcastUpload = async (files: File[]) => {
-    setUploadingPodcast(true);
-    try {
-      const url = await uploadFile(files[0], 'faq_podcasts');
-      setPodcastUrl(url);
-    } catch (err) {
-      console.error('Error uploading podcast:', err);
-    }
-    setUploadingPodcast(false);
+    if (files.length === 0) return;
+    const url = await uploadFile(files[0], 'faq_podcasts');
+    setPodcastUrl(url);
   };
 
-  // When “Save FAQ” is clicked:
   const handleAddFaq = async () => {
     if (!question || !answer) return;
     const docRef = await addDoc(collection(db, 'faqs'), {
@@ -117,13 +102,13 @@ export default function FaqPage() {
         id: docRef.id,
         question,
         answer,
-        imageUrl: imageUrl || null,
-        podcastUrl: podcastUrl || null,
+
+        imageUrl,
+        podcastUrl,
       },
       ...prev,
     ]);
 
-    // Clear form
     setQuestion('');
     setAnswer('');
     setImageUrl(undefined);
@@ -133,47 +118,69 @@ export default function FaqPage() {
   return (
     <Container sx={{ py: 4 }}>
       <Typography variant="h4" gutterBottom>
-        Frequently Asked Questions (Admin)
-      </Typography>
 
-      {/* List existing FAQs */}
+        Frequently Asked Questions
+      </Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {faqs.map((f) => (
-          <Box
-            key={f.id}
-            sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}
-          >
+          <Box key={f.id} sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>
+
             <Typography variant="h6">{f.question}</Typography>
             <Typography variant="body2" paragraph>
               {f.answer}
             </Typography>
             {f.imageUrl && (
-              <Card sx={{ maxWidth: 400, mb: 1 }}>
-                <CardMedia
-                  component="img"
-                  src={f.imageUrl}
-                  alt="FAQ related"
-                  sx={{ objectFit: 'cover' }}
-                />
-              </Card>
+
+              <Box
+                component="img"
+                src={f.imageUrl}
+                alt="FAQ related"
+                sx={{ maxWidth: '100%', mb: 1 }}
+              />
             )}
             {f.podcastUrl && (
-              <Box
-                component="audio"
-                controls
-                src={f.podcastUrl}
-                sx={{ width: '100%' }}
-              />
+              <Box component="audio" controls src={f.podcastUrl} sx={{ width: '100%' }} />
             )}
           </Box>
         ))}
       </Box>
 
-      {/* Only show “Add FAQ” form if user is signed in */}
+      {images.length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h5" gutterBottom>
+            Videos
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+            {images.map((img) => (
+              <Box
+                key={img.id}
+                component="img"
+                src={img.url}
+                alt={img.name}
+                sx={{ maxWidth: 300, width: '100%', borderRadius: 1 }}
+              />
+            ))}
+          </Box>
+        </Box>
+      )}
+
+      {podcasts.length > 0 && (
+        <Box mt={4}>
+          <Typography variant="h5" gutterBottom>
+            Podcasts
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {podcasts.map((p) => (
+              <Box key={p.id} component="audio" controls src={p.url} />
+            ))}
+          </Box>
+        </Box>
+      )}
+
       {user && (
         <Box mt={4} sx={{ borderTop: 1, borderColor: 'divider', pt: 3 }}>
           <Typography variant="h5" gutterBottom>
-            Add New FAQ
+            Add FAQ
           </Typography>
 
           <TextField
@@ -193,20 +200,10 @@ export default function FaqPage() {
             onChange={(e) => setAnswer(e.target.value)}
             sx={{ mb: 2 }}
           />
-
-          <Typography variant="subtitle1" sx={{ mb: 1 }}>
-            Upload an Image (optional):
-          </Typography>
           <ImageUploader onUpload={handleImageUpload} />
-          {uploadingImage && <CircularProgress size={24} sx={{ mt: 1 }} />}
-
-          <Typography variant="subtitle1" sx={{ mb: 1, mt: 3 }}>
-            Upload a Podcast (optional):
-          </Typography>
           <PodcastUploader onUpload={handlePodcastUpload} />
-          {uploadingPodcast && <CircularProgress size={24} sx={{ mt: 1 }} />}
+          <Button variant="contained" onClick={handleAddFaq}>
 
-          <Button variant="contained" onClick={handleAddFaq} sx={{ mt: 3 }}>
             Save FAQ
           </Button>
         </Box>

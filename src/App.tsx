@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // -- Layouts & Authentication
@@ -14,10 +14,12 @@ import Location from './pages/Location';
 // import ContactPage from "./pages/ContactPage"; // <-- Not built yet, so commented out
 import PublicFaqPage from './pages/PublicFaqPage';
 import AdminPage from './pages/AdminPage';
+import FaqPage from './pages/FaqPage';
 
-// -- Admin‐only sub‐pages
-const FaqPage = lazy(() => import('./pages/FaqPage'));
-// const ProjectGalleryPage = lazy(() => import("./pages/ProjectGalleryPage")); // <-- Not needed now
+function ContactPage() {
+  return <h2>Contact Us</h2>;
+}
+
 
 export default function App() {
   return (
@@ -67,7 +69,9 @@ export default function App() {
           path="/faq"
           element={
             <Layout>
-              <PublicFaqPage />
+
+              <FaqPage />
+
             </Layout>
           }
         />
