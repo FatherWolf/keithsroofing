@@ -1,28 +1,36 @@
 // src/App.tsx
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
+// -- Layouts & Authentication
 import { Layout } from './components/Layout';
-import Login from './pages/Login';
-import { ProtectedRoute } from './components/ProtectedRoute';
 import { AdminLayout } from './components/AdminLayout';
+import { ProtectedRoute } from './components/ProtectedRoute';
+
+// -- Pages
+import Login from './pages/Login';
 import HomePage from './pages/HomePage';
 import Location from './pages/Location';
+// import ContactPage from "./pages/ContactPage"; // <-- Not built yet, so commented out
+import PublicFaqPage from './pages/PublicFaqPage';
 import AdminPage from './pages/AdminPage';
 
-function ContactPage() {
-  return <h2>Contact Us</h2>;
-}
-function FAQPage() {
-  return <h2>FAQ</h2>;
-}
+// -- Admin‐only sub‐pages
+const FaqPage = lazy(() => import('./pages/FaqPage'));
+// const ProjectGalleryPage = lazy(() => import("./pages/ProjectGalleryPage")); // <-- Not needed now
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* PUBLIC */}
+        {/* ================================================================= */}
+        {/* 1) PUBLIC ROUTES */}
+        {/* ================================================================= */}
+
+        {/* Login (public) */}
         <Route path="/login" element={<Login />} />
 
+        {/* Home (public) */}
         <Route
           path="/"
           element={
@@ -31,6 +39,8 @@ export default function App() {
             </Layout>
           }
         />
+
+        {/* Location (public) */}
         <Route
           path="/location"
           element={
@@ -39,6 +49,9 @@ export default function App() {
             </Layout>
           }
         />
+
+        {/* Contact (public) */}
+        {/*
         <Route
           path="/contact"
           element={
@@ -47,30 +60,54 @@ export default function App() {
             </Layout>
           }
         />
+        */}
+
+        {/* FAQ (public) */}
         <Route
           path="/faq"
           element={
             <Layout>
-              <FAQPage />
+              <PublicFaqPage />
             </Layout>
           }
         />
 
-        {/* ADMIN */}
+        {/* ================================================================= */}
+        {/* 2) ADMIN‐ONLY ROUTES: all under /admin/* */}
+        {/* ================================================================= */}
         <Route
-          path="/admin"
+          path="/admin/*"
           element={
             <ProtectedRoute redirectTo="/login">
               <AdminLayout>
-                <Suspense fallback={<div>Loading admin tools…</div>}>
-                  <AdminPage />
+                <Suspense fallback={<div>Loading admin…</div>}>
+                  <Routes>
+                    {/* /admin (dashboard) */}
+                    <Route index element={<AdminPage />} />
+
+                    {/* /admin/faq (FAQ editor) */}
+                    <Route path="faq" element={<FaqPage />} />
+
+                    {/*
+                    /admin/projects (project gallery editor) - commented out for now
+                    <Route path="projects" element={<ProjectGalleryPage />} />
+                    */}
+
+                    {/* If someone visits /admin/anything‐else, redirect to /admin */}
+                    <Route
+                      path="*"
+                      element={<Navigate to="/admin" replace />}
+                    />
+                  </Routes>
                 </Suspense>
               </AdminLayout>
             </ProtectedRoute>
           }
         />
 
-        {/* CATCH-ALL */}
+        {/* ================================================================= */}
+        {/* 3) CATCH‐ALL: redirect unknown URLs to “/” */}
+        {/* ================================================================= */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

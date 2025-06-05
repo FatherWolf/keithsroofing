@@ -1,9 +1,10 @@
+// src/components/ImageUploader.tsx
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, LinearProgress } from '@mui/material';
 
 interface ImageUploaderProps {
-  onUpload: (files: File[]) => void;
+  onUpload: (files: File[]) => Promise<void> | void;
 }
 
 export function ImageUploader({ onUpload }: ImageUploaderProps) {
@@ -20,14 +21,16 @@ export function ImageUploader({ onUpload }: ImageUploaderProps) {
     multiple: true,
   });
 
-  const handleUpload = () => {
+  const handleUploadClick = async () => {
+    if (files.length === 0) return;
     setUploading(true);
-    // TODO: Replace with real upload logic (e.g. Firebase Storage)
-    setTimeout(() => {
-      onUpload(files);
-      setUploading(false);
-      setFiles([]);
-    }, 1500);
+    try {
+      await onUpload(files);
+    } catch (err) {
+      console.error('Error in onUpload:', err);
+    }
+    setFiles([]);
+    setUploading(false);
   };
 
   return (
@@ -53,20 +56,28 @@ export function ImageUploader({ onUpload }: ImageUploaderProps) {
       </Box>
 
       {files.length > 0 && (
-        <Box mt={2} sx={{ textAlign: 'center' }}>
+        <Box mt={2}>
           {files.map((file) => (
-            <Typography key={file.name} variant="body2">
-              {file.name}
-            </Typography>
+            <Box key={file.name} sx={{ mb: 1 }}>
+              <Typography variant="body2">{file.name}</Typography>
+              {uploading && (
+                <LinearProgress
+                  variant="indeterminate"
+                  sx={{ height: 8, borderRadius: 1, mt: 0.5 }}
+                />
+              )}
+            </Box>
           ))}
-          <Button
-            variant="contained"
-            onClick={handleUpload}
-            disabled={uploading}
-            sx={{ mt: 1 }}
-          >
-            {uploading ? 'Uploading…' : 'Upload Images'}
-          </Button>
+
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Button
+              variant="contained"
+              onClick={handleUploadClick}
+              disabled={uploading}
+            >
+              {uploading ? 'Uploading…' : 'Upload Images'}
+            </Button>
+          </Box>
         </Box>
       )}
     </Box>

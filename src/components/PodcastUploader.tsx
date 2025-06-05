@@ -1,18 +1,20 @@
 // src/components/PodcastUploader.tsx
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, LinearProgress } from '@mui/material';
 
 interface PodcastUploaderProps {
-  onUpload: (files: File[]) => void;
+  onUpload: (files: File[]) => Promise<void> | void;
 }
 
 export function PodcastUploader({ onUpload }: PodcastUploaderProps) {
-  const [files, setFiles] = useState<File[]>([]);
+  const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const onDrop = useCallback((accepted: File[]) => {
-    setFiles((prev) => [...prev, ...accepted]);
+    if (accepted.length > 0) {
+      setFile(accepted[0]);
+    }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -21,14 +23,16 @@ export function PodcastUploader({ onUpload }: PodcastUploaderProps) {
     multiple: false,
   });
 
-  const handleUpload = () => {
+  const handleUploadClick = async () => {
+    if (!file) return;
     setUploading(true);
-    // TODO: Replace with real upload logic
-    setTimeout(() => {
-      onUpload(files);
-      setUploading(false);
-      setFiles([]);
-    }, 1500);
+    try {
+      await onUpload([file]);
+    } catch (err) {
+      console.error('Error in onUpload:', err);
+    }
+    setFile(null);
+    setUploading(false);
   };
 
   return (
@@ -53,17 +57,24 @@ export function PodcastUploader({ onUpload }: PodcastUploaderProps) {
         </Typography>
       </Box>
 
-      {files.length > 0 && (
-        <Box mt={2} sx={{ textAlign: 'center' }}>
-          <Typography variant="body2">{files[0].name}</Typography>
-          <Button
-            variant="contained"
-            onClick={handleUpload}
-            disabled={uploading}
-            sx={{ mt: 1 }}
-          >
-            {uploading ? 'Uploading…' : 'Upload Podcast'}
-          </Button>
+      {file && (
+        <Box mt={2}>
+          <Typography variant="body2">{file.name}</Typography>
+          {uploading && (
+            <LinearProgress
+              variant="indeterminate"
+              sx={{ height: 8, borderRadius: 1, mt: 0.5 }}
+            />
+          )}
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+            <Button
+              variant="contained"
+              onClick={handleUploadClick}
+              disabled={uploading}
+            >
+              {uploading ? 'Uploading…' : 'Upload Podcast'}
+            </Button>
+          </Box>
         </Box>
       )}
     </Box>
