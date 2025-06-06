@@ -16,6 +16,7 @@ import {
   addDoc,
   Timestamp,
   DocumentData,
+  onSnapshot,
 } from 'firebase/firestore';
 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -51,23 +52,27 @@ export default function FaqPage() {
   const [user] = useAuthState(auth);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const faqSnap = await getDocs(collection(db, 'faqs'));
-      const faqItems: FaqItem[] = faqSnap.docs.map((d) => ({
+    const faqUnsub = onSnapshot(collection(db, 'faqs'), (snap) => {
+      const items: FaqItem[] = snap.docs.map((d) => ({
         id: d.id,
         ...(d.data() as DocumentData),
       })) as FaqItem[];
-      setFaqs(faqItems);
+      setFaqs(items);
+    });
 
-      const mediaSnap = await getDocs(collection(db, 'media'));
-      const mediaItems: MediaItem[] = mediaSnap.docs.map((d) => ({
+    const mediaUnsub = onSnapshot(collection(db, 'media'), (snap) => {
+      const items: MediaItem[] = snap.docs.map((d) => ({
         id: d.id,
         ...(d.data() as DocumentData),
       })) as MediaItem[];
-      setImages(mediaItems.filter((m) => m.type === 'image'));
-      setPodcasts(mediaItems.filter((m) => m.type === 'podcast'));
+      setImages(items.filter((m) => m.type === 'image'));
+      setPodcasts(items.filter((m) => m.type === 'podcast'));
+    });
+
+    return () => {
+      faqUnsub();
+      mediaUnsub();
     };
-    fetchData();
   }, []);
 
   const uploadFile = async (file: File, folder: string) => {
@@ -78,41 +83,53 @@ export default function FaqPage() {
 
   const handleImageUpload = async (files: File[]) => {
     if (files.length === 0) return;
-    const url = await uploadFile(files[0], 'faq_images');
-    setImageUrl(url);
+    try {
+      const url = await uploadFile(files[0], 'faq_images');
+      setImageUrl(url);
+    } catch (err) {
+      console.error('Image upload failed:', err);
+    }
   };
 
   const handlePodcastUpload = async (files: File[]) => {
     if (files.length === 0) return;
-    const url = await uploadFile(files[0], 'faq_podcasts');
-    setPodcastUrl(url);
+    try {
+      const url = await uploadFile(files[0], 'faq_podcasts');
+      setPodcastUrl(url);
+    } catch (err) {
+      console.error('Podcast upload failed:', err);
+    }
   };
 
   const handleAddFaq = async () => {
     if (!question || !answer) return;
-    const docRef = await addDoc(collection(db, 'faqs'), {
-      question,
-      answer,
-      imageUrl: imageUrl || null,
-      podcastUrl: podcastUrl || null,
-      createdAt: Timestamp.now(),
-    });
-    setFaqs((prev) => [
-      {
-        id: docRef.id,
+    try {
+      const docRef = await addDoc(collection(db, 'faqs'), {
         question,
         answer,
+        imageUrl: imageUrl || null,
+        podcastUrl: podcastUrl || null,
+        createdAt: Timestamp.now(),
+      });
 
-        imageUrl,
-        podcastUrl,
-      },
-      ...prev,
-    ]);
+      setFaqs((prev) => [
+        {
+          id: docRef.id,
+          question,
+          answer,
+          imageUrl,
+          podcastUrl,
+        },
+        ...prev,
+      ]);
 
-    setQuestion('');
-    setAnswer('');
-    setImageUrl(undefined);
-    setPodcastUrl(undefined);
+      setQuestion('');
+      setAnswer('');
+      setImageUrl(undefined);
+      setPodcastUrl(undefined);
+    } catch (err) {
+      console.error('Error saving FAQ:', err);
+    }
   };
 
   return (
