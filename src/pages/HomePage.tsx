@@ -8,20 +8,18 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Avatar from '@mui/material/Avatar';
-import { useTheme } from '@mui/material/styles';
 import { Seo } from '../components/Seo';
 import GoogleReviews from '../components/GoogleReview';
-import promoVideo from '../images/Advideo.mp4';
 import CertScroll from '../components/CertScroll';
-
-// ← your real hero image here:
 import heroImage from '../images/IMG_1670.jpeg';
+import promoVideo from '../images/Advideo.mp4';
+import { motion } from 'framer-motion';
 
 export default function HomePage() {
-  const theme = useTheme();
-  const jsonLd = {
-    /* same as before */
-  };
+  // Define our “rich” palette
+  const navy = '#0B1D3A';
+  const gold = '#B89B4D';
+  const offWhite = '#FAF9F6';
 
   const services = [
     {
@@ -44,116 +42,113 @@ export default function HomePage() {
     require('../images/ProjectGal5.jpeg'),
   ];
 
+  const fadeUp = {
+    initial: { opacity: 0, y: 40 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.8 },
+  };
+
   return (
     <>
       <Seo
         title="Keith's Roofing | Premium Roofing Solutions"
-        description="Top-tier roofing for discerning clients. Get your free estimate now."
+        description="Top‐tier roofing for discerning clients."
       />
-      {/* Structured Data */}
-      <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
 
+      {/* HERO */}
       <Box
         component="section"
-        aria-label="Hero"
         sx={{
           position: 'relative',
-          width: '100vw',
-          left: '50%',
-          ml: '-50vw',
           height: { xs: '60vh', md: '75vh' },
           backgroundImage: `url(${heroImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundAttachment: 'fixed',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: theme.palette.primary.contrastText,
-          textAlign: 'center',
-          px: 2,
           overflow: 'hidden',
-          zIndex: 0,
         }}
       >
-        {/* Gradient overlay */}
         <Box
           sx={{
             position: 'absolute',
             inset: 0,
-            background:
-              'linear-gradient(135deg, rgba(102,7,8,0.8) 0%, rgba(186,24,27,0.8) 100%)',
-            zIndex: 1,
+            background: `linear-gradient(135deg, ${navy}CC 0%, ${navy}99 100%)`,
           }}
         />
-        {/* Hero text/button */}
-        <Box sx={{ position: 'relative', zIndex: 2, maxWidth: 700 }}>
-          <Typography variant="h1" gutterBottom>
+        <motion.div
+          initial={{ opacity: 0, scale: 1.1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1 }}
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#FFF',
+            textAlign: 'center',
+            padding: '0 16px',
+          }}
+        >
+          <Typography variant="h1" gutterBottom sx={{ fontWeight: 700 }}>
             Keith’s Roofing
           </Typography>
-          <Typography variant="h4" component="h2" mb={4}>
-            Luxury Roofing Solutions Crafted for Excellence and Durability
+          <Typography variant="h5" gutterBottom>
+            Luxury Roofing Solutions for Discerning Clients
           </Typography>
           <Button
             variant="contained"
-            color="secondary"
-            size="large"
+            sx={{
+              mt: 2,
+              bgcolor: gold,
+              color: navy,
+              px: 4,
+              py: 1.5,
+              fontSize: '1rem',
+              '&:hover': { bgcolor: '#A88A42' },
+            }}
             href="/contact"
           >
-            Request a Free Estimate
+            Request Your Free Estimate
           </Button>
-        </Box>
+        </motion.div>
       </Box>
 
-      {/* Promotional Video Section */}
-      <Box
-        component="section"
-        aria-label="Promo Video"
-        sx={{
-          bgcolor: theme.palette.grey[50],
-          py: 8,
-          textAlign: 'center',
-        }}
-      >
+      {/* VIDEO */}
+      <Box component="section" sx={{ bgcolor: offWhite, py: 8 }}>
         <Container>
-          <Typography variant="h3" gutterBottom sx={{ fontWeight: 600 }}>
-            Who We Are
-          </Typography>
-
-          {/* HTML5 video */}
-          <Box
-            component="video"
-            controls
-            src={promoVideo} // ← your video file path
-            sx={{
-              width: '100%',
-              maxWidth: 800,
-              height: 'auto',
-              borderRadius: 2,
-              boxShadow: 3,
-            }}
-          />
+          <motion.div {...fadeUp}>
+            <Typography variant="h3" align="center" gutterBottom>
+              Who We Are
+            </Typography>
+            <Box
+              component="video"
+              controls
+              src={promoVideo}
+              sx={{
+                width: '100%',
+                maxWidth: 800,
+                border: `4px solid ${gold}`,
+                borderRadius: 2,
+                display: 'block',
+                mx: 'auto',
+                boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+              }}
+            />
+          </motion.div>
         </Container>
       </Box>
-      {/* Services Section (now scrolling over the banner) */}
-      <Box
-        component="section"
-        sx={{
-          position: 'relative',
-          zIndex: 1,
-          bgcolor: theme.palette.background.paper,
-          py: 8,
-        }}
-      >
+
+      {/* SERVICES */}
+      <Box component="section" sx={{ bgcolor: '#FFF', py: 8 }}>
         <Container>
-          <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-            sx={{ fontWeight: 600 }}
-          >
-            Our Premium Services
-          </Typography>
+          <motion.div {...fadeUp}>
+            <Typography variant="h3" align="center" gutterBottom>
+              Our Premium Services
+            </Typography>
+          </motion.div>
           <Box
             sx={{
               display: 'grid',
@@ -162,121 +157,147 @@ export default function HomePage() {
               gridTemplateColumns: {
                 xs: '1fr',
                 sm: '1fr 1fr',
-                md: 'repeat(4, 1fr)',
+                md: 'repeat(4,1fr)',
               },
             }}
           >
-            {services.map((svc) => (
-              <Card key={svc.title} elevation={4}>
-                <CardMedia
-                  component="img"
-                  height="180"
-                  image={svc.img}
-                  alt={svc.title}
-                  loading="lazy"
-                />
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    {svc.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Expert craftsmanship tailored to the most exacting
-                    standards.
-                  </Typography>
-                </CardContent>
-              </Card>
+            {services.map((svc, i) => (
+              <motion.div
+                key={svc.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2, duration: 0.6 }}
+              >
+                <Card
+                  elevation={2}
+                  sx={{
+                    border: `1px solid ${offWhite}`,
+                    '&:hover': {
+                      transform: 'translateY(-6px) scale(1.02)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="180"
+                    image={svc.img}
+                    alt={svc.title}
+                  />
+                  <CardContent>
+                    <Typography variant="h6">{svc.title}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Expert craftsmanship tailored to the most exacting
+                      standards.
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </Box>
         </Container>
       </Box>
-      {/* Gallery on light grey */}
-      <Box
-        component="section"
-        sx={{
-          bgcolor: theme.palette.grey[100],
-          py: 8,
-          textAlign: 'center',
-        }}
-      >
+
+      {/* CERTIFICATIONS */}
+      <Box component="section" sx={{ bgcolor: offWhite, py: 8 }}>
         <Container>
-          <CertScroll />
+          <motion.div {...fadeUp}>
+            <CertScroll />
+          </motion.div>
         </Container>
       </Box>
 
-      <Box component="section" sx={{ bgcolor: theme.palette.grey[100], py: 8 }}>
+      {/* GALLERY */}
+      <Box component="section" sx={{ bgcolor: '#FFF', py: 8 }}>
         <Container>
-          <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-            sx={{ fontWeight: 600 }}
-          >
-            Project Gallery
-          </Typography>
+          <motion.div {...fadeUp}>
+            <Typography variant="h3" align="center" gutterBottom>
+              Project Gallery
+            </Typography>
+          </motion.div>
           <Box
             sx={{
               display: 'grid',
               gap: 2,
               mt: 2,
               gridTemplateColumns: {
-                xs: 'repeat(2, 1fr)',
-                sm: 'repeat(3, 1fr)',
-                md: 'repeat(5, 1fr)',
+                xs: 'repeat(2,1fr)',
+                sm: 'repeat(3,1fr)',
+                md: 'repeat(5,1fr)',
               },
             }}
           >
             {galleryImages.map((src, i) => (
-              <Box
+              <motion.img
                 key={i}
-                component="img"
                 src={src}
                 alt={`Project ${i + 1}`}
-                loading="lazy"
-                sx={{
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                style={{
                   width: '100%',
-                  aspectRatio: '1/1',
+                  aspectRatio: '1',
                   objectFit: 'cover',
-                  borderRadius: 1,
-                  transition: 'transform 0.3s ease',
-                  '&:hover': { transform: 'scale(1.05)' },
+                  borderRadius: 8,
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
                 }}
+                onClick={() => window.open(src, '_blank')}
               />
             ))}
           </Box>
         </Container>
       </Box>
-      {/* Testimonials on soft white */}
-      <Box
-        component="section"
-        sx={{ bgcolor: theme.palette.background.paper, py: 8 }}
-      >
-        <GoogleReviews
-          placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
-          apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
-          maxReviews={5}
-        />
+
+      {/* REVIEWS */}
+      <Box component="section" sx={{ bgcolor: offWhite, py: 8 }}>
+        <Container>
+          <motion.div {...fadeUp}>
+            <GoogleReviews
+              placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
+              apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
+              maxReviews={5}
+            />
+          </motion.div>
+        </Container>
       </Box>
-      {/* Final CTA on primary red */}
+
+      {/* FINAL CTA */}
       <Box
         component="section"
-        sx={{
-          bgcolor: theme.palette.primary.main,
-          color: '#fff',
-          py: 6,
-          textAlign: 'center',
-        }}
+        sx={{ bgcolor: navy, color: '#FFF', py: 8, textAlign: 'center' }}
       >
-        <Typography variant="h4" gutterBottom>
-          Ready to Elevate Your Property?
-        </Typography>
-        <Button
-          variant="contained"
-          color="secondary"
-          size="large"
-          href="/contact"
-        >
-          Schedule Your Consultation
-        </Button>
+        <Container>
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Typography variant="h4" gutterBottom>
+              Ready to Elevate Your Property?
+            </Typography>
+            <Button
+              variant="contained"
+              sx={{
+                mt: 2,
+                bgcolor: gold,
+                color: navy,
+                px: 4,
+                py: 1.5,
+                fontSize: '1rem',
+                '&:hover': { bgcolor: '#A88A42' },
+              }}
+              href="/contact"
+            >
+              Schedule Your Consultation
+            </Button>
+          </motion.div>
+        </Container>
       </Box>
     </>
   );

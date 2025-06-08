@@ -1,5 +1,5 @@
 // src/App.tsx
-import React, { Suspense } from 'react';
+import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
 // -- Layouts & Authentication
@@ -11,15 +11,10 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import Login from './pages/Login';
 import HomePage from './pages/HomePage';
 import Location from './pages/Location';
-// import ContactPage from "./pages/ContactPage"; // <-- Not built yet, so commented out
+// import ContactPage from "./pages/ContactPage"; // Not built yet, so commented out
 import PublicFaqPage from './pages/PublicFaqPage';
 import AdminPage from './pages/AdminPage';
 import FaqPage from './pages/FaqPage';
-
-function ContactPage() {
-  return <h2>Contact Us</h2>;
-}
-
 
 export default function App() {
   return (
@@ -52,7 +47,7 @@ export default function App() {
           }
         />
 
-        {/* Contact (public) */}
+        {/* Contact (public)—uncomment once you create ContactPage.tsx */}
         {/*
         <Route
           path="/contact"
@@ -69,41 +64,29 @@ export default function App() {
           path="/faq"
           element={
             <Layout>
-
-              <FaqPage />
-
+              <PublicFaqPage />
             </Layout>
           }
         />
 
         {/* ================================================================= */}
-        {/* 2) ADMIN‐ONLY ROUTES: all under /admin/* */}
+        {/* 2) ADMIN‐ONLY ROUTES (under /admin/*) */}
         {/* ================================================================= */}
         <Route
           path="/admin/*"
           element={
             <ProtectedRoute redirectTo="/login">
               <AdminLayout>
-                <Suspense fallback={<div>Loading admin…</div>}>
-                  <Routes>
-                    {/* /admin (dashboard) */}
-                    <Route index element={<AdminPage />} />
+                <Routes>
+                  {/* /admin (dashboard) */}
+                  <Route index element={<AdminPage />} />
 
-                    {/* /admin/faq (FAQ editor) */}
-                    <Route path="faq" element={<FaqPage />} />
+                  {/* /admin/faq (FAQ editor) */}
+                  <Route path="faq" element={<FaqPage />} />
 
-                    {/*
-                    /admin/projects (project gallery editor) - commented out for now
-                    <Route path="projects" element={<ProjectGalleryPage />} />
-                    */}
-
-                    {/* If someone visits /admin/anything‐else, redirect to /admin */}
-                    <Route
-                      path="*"
-                      element={<Navigate to="/admin" replace />}
-                    />
-                  </Routes>
-                </Suspense>
+                  {/* Any other /admin/* → redirect back to /admin */}
+                  <Route path="*" element={<Navigate to="/admin" replace />} />
+                </Routes>
               </AdminLayout>
             </ProtectedRoute>
           }
