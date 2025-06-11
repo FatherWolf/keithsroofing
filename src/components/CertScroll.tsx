@@ -10,7 +10,6 @@ const logos = [
     alt: 'BBB Accredited Business',
   },
   {
-    // Replace this placeholder with your actual Tamko Pro logo
     src: 'https://via.placeholder.com/200x80?text=TAMKO+Pro',
     alt: 'TAMKO Pro',
   },
@@ -23,12 +22,6 @@ const logos = [
     alt: 'VELUX',
   },
   {
-    // Drop your real `hsv2023.png` into public/images/
-    src: '/images/hsv2023.png',
-    alt: "Hot Springs Village Readers' Choice 2023",
-  },
-  {
-    // Drop your real `hsv2024.png` into public/images/
     src: '/images/hsv2024.png',
     alt: "Hot Springs Village Readers' Choice 2024",
   },
@@ -38,7 +31,7 @@ const logos = [
   },
 ];
 
-export default function CertScroll() {
+export default function CertificationsCarousel() {
   const theme = useTheme();
 
   return (
@@ -56,12 +49,12 @@ export default function CertScroll() {
         variant="h4"
         align="center"
         gutterBottom
-        sx={{ fontWeight: 600, mb: 1 }}
+        sx={{ fontWeight: 600, mb: 1, color: theme.palette.text.primary }}
       >
         TRUST THE EXPERTS
       </Typography>
 
-      {/* Thin red divider */}
+      {/* Divider */}
       <Box
         sx={{
           height: 2,
@@ -72,7 +65,7 @@ export default function CertScroll() {
         }}
       />
 
-      {/* Scrollable logo container */}
+      {/* Logo carousel */}
       <Box
         sx={{
           display: 'flex',
