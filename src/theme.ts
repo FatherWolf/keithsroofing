@@ -1,37 +1,32 @@
 // src/theme.ts
 import { createTheme } from '@mui/material/styles';
 
+const CHARCOAL = '#161A1D';
+const OFF_WHITE = '#FAF9F6';
+const ACCENT_RED = '#E5383B';
+
 const theme = createTheme({
   palette: {
-    primary: {
-      light: '#E5383B',
-      main: '#BA181B',
-      dark: '#660708',
-      contrastText: '#FFFFFF',
-    },
-    secondary: {
-      main: '#161A1D',
-      contrastText: '#FFFFFF',
-    },
     background: {
-      default: '#F5F3F4',
-      paper: '#FFFFFF',
+      default: CHARCOAL,
+      paper: CHARCOAL,
     },
     text: {
-      primary: '#0B090A',
-      secondary: '#161A1D',
+      primary: OFF_WHITE,
+      secondary: 'rgba(255,255,255,0.7)',
     },
-    error: {
-      main: '#A4161A',
-    },
-    info: {
-      main: '#B1A7A6',
-    },
+    primary: { main: ACCENT_RED, contrastText: OFF_WHITE },
+    secondary: { main: ACCENT_RED, contrastText: OFF_WHITE },
+    error: { main: ACCENT_RED },
   },
-  typography: {
-    fontFamily: 'Roboto, Arial, sans-serif',
-    h1: { fontWeight: 700 },
-    h2: { fontWeight: 600 },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          backgroundColor: CHARCOAL,
+        },
+      },
+    },
   },
 });
 

@@ -16,7 +16,6 @@ import { Link, useLocation } from 'react-router-dom';
 
 const NAV_ITEMS = [
   { label: 'Home', to: '/' },
-  { label: 'Location', to: '/location' },
   { label: 'Contact', to: '/contact' },
   { label: 'FAQ', to: '/faq' },
 ];

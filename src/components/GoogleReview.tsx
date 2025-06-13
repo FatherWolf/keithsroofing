@@ -84,16 +84,6 @@ export default function GoogleReviews({
       aria-labelledby="reviews-heading"
       sx={{ py: 8, bgcolor: theme.palette.background.paper }}
     >
-      <Typography
-        id="reviews-heading"
-        variant="h3"
-        align="center"
-        gutterBottom
-        sx={{ fontWeight: 600 }}
-      >
-        What Our Clients Say
-      </Typography>
-
       {/* Scrollable container */}
       <Box
         sx={{
@@ -131,18 +121,6 @@ export default function GoogleReviews({
             </Typography>
           </Box>
         ))}
-      </Box>
-
-      {/* Write a review button */}
-      <Box textAlign="center" mt={4}>
-        <Button
-          variant="outlined"
-          href={`https://search.google.com/local/writereview?placeid=${placeId}`}
-          target="_blank"
-          rel="noopener"
-        >
-          Leave Us a Review
-        </Button>
       </Box>
     </Box>
   );

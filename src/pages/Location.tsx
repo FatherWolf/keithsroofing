@@ -1,140 +1,244 @@
 // src/pages/LocationPage.tsx
-import React from 'react';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
+import React, { useRef, useCallback } from 'react';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  TextField,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
+import {
+  useLoadScript,
+  GoogleMap,
+  Marker,
+  Autocomplete,
+} from '@react-google-maps/api';
 import { Seo } from '../components/Seo';
-import locationHero from '../images/locationimg.jpeg';
-import officeImage from '../images/office.jpeg'; // ← your office photo
+import locationHero from '../images/KeithandTruck.jpeg';
+import officeImage from '../images/office.jpeg';
 
-const CENTER = {
-  lat: 34.63088918301079,
-  lng: -93.05804221042523,
-};
+const CENTER = { lat: 34.63088918301079, lng: -93.05804221042523 };
 
 export default function LocationPage() {
   const theme = useTheme();
+
+  // Load only the "places" library
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY!,
+    libraries: ['places'],
   });
+
+  // Autocomplete refs & callbacks
+  const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const onLoadAuto = useCallback((auto: google.maps.places.Autocomplete) => {
+    autoRef.current = auto;
+  }, []);
+  const onPlaceChanged = useCallback(() => {
+    const place = autoRef.current?.getPlace();
+    if (place?.geometry?.location) {
+      // e.g. pan the map: mapRef.current?.panTo(place.geometry.location)
+    }
+  }, []);
+
+  // Custom palette
+  const darkCharcoal = '#161A1D';
+  const offWhite = '#F5F3F4';
+  const cardBg = '#FFFFFF';
 
   return (
     <>
       <Seo
         title="Keith’s Roofing – Hot Springs, AR Location"
-        description="Keith’s Roofing showroom, conveniently adjacent to the Walmart Supercenter on East Grand Avenue in Hot Springs, Arkansas. Visit us for premium roofing solutions."
+        description="Visit our showroom next to the Walmart Supercenter on Highway 7 in Hot Springs, Arkansas. Discover premium roofing craftsmanship firsthand."
       />
 
-      {/* Hero + Office Images */}
-      <Container component="section" sx={{ py: 2 }}>
-        <Typography
-          variant="h2"
-          align="center"
-          gutterBottom
-          sx={{
-            fontWeight: 600,
-            color: theme.palette.primary.main,
-          }}
-        >
-          Come Visit Us!
-        </Typography>
+      {/* Hero Banner */}
+      <Box
+        component="section"
+        sx={{
+          width: '100vw',
+          position: 'relative',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          height: { xs: '40vh', md: '50vh' },
+          backgroundImage: `url(${locationHero})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          mb: 4,
+        }}
+      >
         <Box
           sx={{
-            display: 'grid',
-            gap: 2,
-            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+            position: 'absolute',
+            inset: 0,
+            bgcolor: 'rgba(22,26,29,0.6)',
+          }}
+        />
+        <Container
+          sx={{
+            position: 'relative',
+            zIndex: 1,
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
-          <Box
-            component="img"
-            src={locationHero}
-            alt="Showroom Exterior"
-            sx={{
-              width: '100%',
-              height: { xs: 200, md: 300 },
-              objectFit: 'cover',
-              borderRadius: 2,
-              boxShadow: 3,
-            }}
-          />
-          <Box
-            component="img"
-            src={officeImage}
-            alt="Our Office Interior"
-            sx={{
-              width: '100%',
-              height: { xs: 200, md: 300 },
-              objectFit: 'cover',
-              borderRadius: 2,
-              boxShadow: 3,
-            }}
-          />
-        </Box>
-      </Container>
+          <Typography
+            variant="h2"
+            component="h1"
+            align="center"
+            sx={{ color: '#faf9f6', fontWeight: 600 }}
+          >
+            Come Visit Our Showroom
+          </Typography>
+        </Container>
+      </Box>
 
-      {/* Map + Address */}
-      <Container component="section" sx={{ py: 8 }}>
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 4,
-            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-          }}
-        >
-          {/* Map */}
+      {/* Map + Autocomplete + Address */}
+      <Box component="section" sx={{ bgcolor: offWhite, py: 8 }}>
+        <Container>
+          <Typography
+            variant="h4"
+            align="center"
+            gutterBottom
+            sx={{ color: darkCharcoal, fontWeight: 600 }}
+          >
+            Find Us & Search Nearby
+          </Typography>
+
           <Box
             sx={{
-              borderRadius: 2,
-              boxShadow: 3,
-              overflow: 'hidden',
-              height: { xs: 240, md: 400 },
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+              gap: 4,
+              mt: 4,
             }}
           >
-            {!isLoaded && !loadError && (
-              <Typography sx={{ p: 2 }}>Loading map…</Typography>
-            )}
-            {loadError && (
-              <Typography color="error" sx={{ p: 2 }}>
-                Map failed to load
-              </Typography>
-            )}
-            {isLoaded && (
-              <GoogleMap
-                mapContainerStyle={{ width: '100%', height: '100%' }}
-                center={CENTER}
-                zoom={15}
-              >
-                <Marker position={CENTER} />
-              </GoogleMap>
-            )}
-          </Box>
-
-          {/* Info */}
-          <Box>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
-              Visit Our Hot Springs Showroom
-            </Typography>
-            <Typography variant="body1" paragraph>
-              We’re located at 3560 N Hwy 7 B, right next to the Walmart
-              Supercenter in Hot Springs, Arkansas. Stop by to explore our
-              luxury roofing materials and discuss your project with our
-              experts.
-            </Typography>
-            <Button
-              variant="contained"
-              color="secondary"
-              href={`https://www.google.com/maps/dir/?api=1&destination=${CENTER.lat},${CENTER.lng}`}
-              target="_blank"
-              rel="noopener"
+            {/* Map Card */}
+            <Card
+              sx={{
+                bgcolor: cardBg,
+                boxShadow: 3,
+                borderRadius: 2,
+                overflow: 'hidden',
+                height: { xs: 240, md: 400 },
+              }}
             >
-              Get Directions
-            </Button>
+              {!isLoaded && !loadError && (
+                <Typography sx={{ p: 2 }}>Loading map…</Typography>
+              )}
+              {loadError && (
+                <Typography sx={{ p: 2 }} color="error">
+                  Failed to load map
+                </Typography>
+              )}
+              {isLoaded && (
+                <GoogleMap
+                  mapContainerStyle={{ width: '100%', height: '100%' }}
+                  center={CENTER}
+                  zoom={15}
+                >
+                  <Marker position={CENTER} />
+                </GoogleMap>
+              )}
+            </Card>
+
+            {/* Autocomplete + Address Card */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Autocomplete onLoad={onLoadAuto} onPlaceChanged={onPlaceChanged}>
+                <TextField
+                  label="Search for nearby places"
+                  variant="outlined"
+                  fullWidth
+                />
+              </Autocomplete>
+
+              <Card
+                sx={{
+                  bgcolor: cardBg,
+                  boxShadow: 3,
+                  borderRadius: 2,
+                }}
+              >
+                <CardContent>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{ color: darkCharcoal, fontWeight: 600 }}
+                  >
+                    3560 N Highway 7, Hot Springs, AR
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    paragraph
+                    sx={{ color: darkCharcoal }}
+                  >
+                    Right next to the Walmart Supercenter. Explore premium
+                    roofing materials and discuss your project with our experts.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${CENTER.lat},${CENTER.lng}`}
+                    target="_blank"
+                    sx={{
+                      bgcolor: theme.palette.error.main,
+                      color: '#fff',
+                      textTransform: 'none',
+                    }}
+                  >
+                    Get Directions
+                  </Button>
+                </CardContent>
+              </Card>
+            </Box>
           </Box>
-        </Box>
-      </Container>
+        </Container>
+      </Box>
+
+      {/* Showroom Photos */}
+      <Box component="section" sx={{ bgcolor: darkCharcoal, py: 8 }}>
+        <Container>
+          <Typography
+            variant="h4"
+            align="center"
+            gutterBottom
+            sx={{ color: '#faf9f6', fontWeight: 600 }}
+          >
+            Our Showroom
+          </Typography>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+              gap: 4,
+              mt: 4,
+            }}
+          >
+            <Card sx={{ boxShadow: 3, borderRadius: 2, overflow: 'hidden' }}>
+              <CardMedia
+                component="img"
+                height="250"
+                image={locationHero}
+                alt="Showroom Exterior"
+              />
+            </Card>
+            <Card sx={{ boxShadow: 3, borderRadius: 2, overflow: 'hidden' }}>
+              <CardMedia
+                component="img"
+                height="250"
+                image={officeImage}
+                alt="Showroom Interior"
+              />
+            </Card>
+          </Box>
+        </Container>
+      </Box>
     </>
   );
 }

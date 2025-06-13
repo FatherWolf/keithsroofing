@@ -1,25 +1,37 @@
 // src/pages/HomePage.tsx
 import React from 'react';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
+import {
+  Box,
+  Container,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { motion } from 'framer-motion';
 import { Seo } from '../components/Seo';
 import GoogleReviews from '../components/GoogleReview';
 import CertScroll from '../components/CertScroll';
 import heroImage from '../images/IMG_1670.jpeg';
 import promoVideo from '../images/Advideo.mp4';
-import { motion } from 'framer-motion';
+import { keyframes } from '@mui/system';
+
+/* define the scroll animation */
+const scroll = keyframes`
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+`;
 
 export default function HomePage() {
-  // Your accent colors:
-  const accentRed = '#E5383B';
-  const cardBg = '#FAF9F6'; // very light for cards
-  const textDark = '#161A1D';
-
+  const theme = useTheme();
+  const fadeUp = {
+    initial: { opacity: 0, y: 30 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true },
+    transition: { duration: 0.6 },
+  };
   const services = [
     {
       title: 'Custom Installations',
@@ -32,8 +44,7 @@ export default function HomePage() {
     { title: 'Luxury Materials', img: 'https://via.placeholder.com/300x200' },
     { title: 'Annual Inspections', img: 'https://via.placeholder.com/300x200' },
   ];
-
-  const galleryImages = [
+  const gallery = [
     require('../images/ProjectGal1.jpeg'),
     require('../images/ProjectGal2.jpeg'),
     require('../images/ProjectGal3.jpeg'),
@@ -41,32 +52,24 @@ export default function HomePage() {
     require('../images/ProjectGal5.jpeg'),
   ];
 
-  const fadeUp = {
-    initial: { opacity: 0, y: 30 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.6 },
-  };
-
   return (
     <>
       <Seo
         title="Keith's Roofing | Premium Roofing Solutions"
         description="Top-tier roofing for discerning clients."
       />
-
-      {/* HERO (full-bleed, dark overlay) */}
+      {/* HERO */}
       <Box
         component="section"
         sx={{
+          backgroundImage: `url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
           position: 'relative',
           width: '100vw',
           left: '50%',
           transform: 'translateX(-50%)',
           height: { xs: '60vh', md: '75vh' },
-          backgroundImage: `url(${heroImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
           overflow: 'hidden',
         }}
       >
@@ -74,7 +77,7 @@ export default function HomePage() {
           sx={{
             position: 'absolute',
             inset: 0,
-            background: 'rgba(22,26,29,0.75)',
+            bgcolor: 'rgba(22,26,29,0.75)',
           }}
         />
         <motion.div
@@ -91,10 +94,10 @@ export default function HomePage() {
             justifyContent: 'center',
             textAlign: 'center',
             padding: '0 16px',
-            color: '#faf9f6',
+            color: theme.palette.text.primary,
           }}
         >
-          <Typography variant="h1" gutterBottom sx={{ fontWeight: 700 }}>
+          <Typography variant="h1" gutterBottom>
             Keith’s Roofing
           </Typography>
           <Typography variant="h5" gutterBottom>
@@ -105,195 +108,262 @@ export default function HomePage() {
             href="/contact"
             sx={{
               mt: 2,
-              bgcolor: accentRed,
-              color: '#fff',
-              px: 4,
-              py: 1.5,
-              '&:hover': { bgcolor: '#C1272D' },
+              bgcolor: theme.palette.secondary.main,
+              '&:hover': { bgcolor: theme.palette.secondary.dark },
             }}
           >
             Request a Free Estimate
           </Button>
         </motion.div>
       </Box>
-
-      {/* WHO WE ARE VIDEO */}
-      <Container component="section" sx={{ py: 8 }}>
-        <motion.div {...fadeUp}>
-          <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-            sx={{ color: '#faf9f6' }}
-          >
-            Who We Are
-          </Typography>
-        </motion.div>
-        <motion.div {...fadeUp}>
-          <Box
-            component="video"
-            controls
-            src={promoVideo}
-            sx={{
-              display: 'block',
-              mx: 'auto',
-              width: '100%',
-              maxWidth: 800,
-              border: `4px solid ${accentRed}`,
-              borderRadius: 2,
-              boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-            }}
-          />
-        </motion.div>
-      </Container>
-
-      {/* SERVICES */}
-      <Container component="section" sx={{ py: 8 }}>
-        <motion.div {...fadeUp}>
-          <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-            sx={{ color: '#faf9f6' }}
-          >
-            Our Premium Services
-          </Typography>
-        </motion.div>
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 4,
-            mt: 4,
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: '1fr 1fr',
-              md: 'repeat(4, 1fr)',
-            },
-          }}
-        >
-          {services.map((svc, i) => (
-            <motion.div
-              key={svc.title}
-              {...fadeUp}
-              transition={{ delay: i * 0.2, duration: 0.6 }}
+      {/* WHO WE ARE */}
+      <Box
+        component="section"
+        sx={{ bgcolor: theme.palette.background.default, py: 8 }}
+      >
+        <Container>
+          <motion.div {...fadeUp}>
+            <Typography
+              variant="h3"
+              align="center"
+              gutterBottom
+              sx={{ color: theme.palette.text.primary }}
             >
-              <Card
-                elevation={2}
-                sx={{
-                  backgroundColor: cardBg,
-                  '&:hover': {
-                    transform: 'translateY(-6px) scale(1.02)',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.1)',
-                  },
-                  transition: 'all 0.3s ease',
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  height="180"
-                  image={svc.img}
-                  alt={svc.title}
-                />
-                <CardContent>
-                  <Typography variant="h6" sx={{ color: textDark }}>
-                    {svc.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Expert craftsmanship tailored to the most exacting
-                    standards.
-                  </Typography>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </Box>
-      </Container>
-
-      {/* CERTIFICATIONS */}
-      <Container component="section" sx={{ py: 8 }}>
-        <motion.div {...fadeUp}>
-          <CertScroll />
-        </motion.div>
-      </Container>
-
-      {/* GALLERY */}
-      <Container component="section" sx={{ py: 8 }}>
-        <motion.div {...fadeUp}>
-          <Typography
-            variant="h3"
-            align="center"
-            gutterBottom
-            sx={{ color: '#faf9f6' }}
-          >
-            Project Gallery
-          </Typography>
-        </motion.div>
-        <Box
-          sx={{
-            display: 'grid',
-            gap: 2,
-            mt: 2,
-            gridTemplateColumns: {
-              xs: 'repeat(2, 1fr)',
-              sm: 'repeat(3, 1fr)',
-              md: 'repeat(5, 1fr)',
-            },
-          }}
-        >
-          {galleryImages.map((src, i) => (
-            <motion.img
-              key={i}
-              src={src}
-              alt={`Project ${i + 1}`}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              style={{
+              Who We Are
+            </Typography>
+          </motion.div>
+          <motion.div {...fadeUp}>
+            <Box
+              component="video"
+              controls
+              src={promoVideo}
+              sx={{
+                display: 'block',
+                mx: 'auto',
                 width: '100%',
-                aspectRatio: '1',
-                objectFit: 'cover',
-                borderRadius: 8,
-                cursor: 'pointer',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                maxWidth: 800,
+                border: `4px solid ${theme.palette.secondary.main}`,
+                borderRadius: 2,
+                boxShadow: 3,
               }}
-              onClick={() => window.open(src, '_blank')}
             />
-          ))}
-        </Box>
-      </Container>
+          </motion.div>
+        </Container>
+      </Box>
+      {/* SERVICES */}
+      <Box
+        component="section"
+        sx={{ bgcolor: theme.palette.background.default, py: 8 }}
+      >
+        <Container>
+          <motion.div {...fadeUp}>
+            <Typography
+              variant="h3"
+              align="center"
+              gutterBottom
+              sx={{ color: theme.palette.text.primary }}
+            >
+              Our Premium Services
+            </Typography>
+          </motion.div>
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 4,
+              mt: 4,
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: '1fr 1fr',
+                md: 'repeat(4,1fr)',
+              },
+            }}
+          >
+            {services.map((svc, i) => (
+              <motion.div key={i} {...fadeUp} transition={{ delay: i * 0.2 }}>
+                <Card
+                  sx={{
+                    bgcolor: theme.palette.background.paper,
+                    '&:hover': {
+                      transform: 'translateY(-6px) scale(1.02)',
+                      boxShadow: 3,
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    height="180"
+                    image={svc.img}
+                    alt={svc.title}
+                  />
+                  <CardContent>
+                    <Typography
+                      variant="h6"
+                      sx={{ color: theme.palette.text.secondary }}
+                    >
+                      {svc.title}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+      {/* CERTIFICATIONS */}
+      <Box
+        component="section"
+        sx={{ bgcolor: theme.palette.background.default, py: 8 }}
+      >
+        <Container>
+          <CertScroll />
+        </Container>
+      </Box>
+      {/* GALLERY */}
+      <Box
+        component="section"
+        sx={{ bgcolor: theme.palette.background.default, py: 8 }}
+      >
+        <Container>
+          <motion.div {...fadeUp}>
+            <Typography
+              variant="h3"
+              align="center"
+              gutterBottom
+              sx={{ color: theme.palette.text.primary }}
+            >
+              Project Gallery
+            </Typography>
+          </motion.div>
+          <Box
+            sx={{
+              display: 'grid',
+              gap: 2,
+              mt: 2,
+              gridTemplateColumns: {
+                xs: 'repeat(2,1fr)',
+                sm: 'repeat(3,1fr)',
+                md: 'repeat(5,1fr)',
+              },
+            }}
+          >
+            {gallery.map((src, i) => (
+              <motion.img
+                key={i}
+                src={src}
+                alt={`Project ${i + 1}`}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                style={{
+                  width: '100%',
+                  aspectRatio: '1',
+                  objectFit: 'cover',
+                  borderRadius: 8,
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                  cursor: 'pointer',
+                }}
+                onClick={() => window.open(src, '_blank')}
+              />
+            ))}
+          </Box>
+        </Container>
+      </Box>
 
       {/* GOOGLE REVIEWS */}
-      <Container component="section" sx={{ py: 8 }}>
-        <motion.div {...fadeUp}>
-          <GoogleReviews
-            placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
-            apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
-            maxReviews={5}
-          />
-        </motion.div>
-      </Container>
-
-      {/* FINAL CTA */}
-      <Box component="section" sx={{ py: 8, textAlign: 'center' }}>
-        <motion.div {...fadeUp}>
-          <Typography variant="h4" gutterBottom sx={{ color: '#faf9f6' }}>
-            Ready to Elevate Your Property?
+      <Box
+        component="section"
+        sx={{
+          bgcolor: theme.palette.grey[900],
+          py: 8,
+          overflow: 'hidden',
+          position: 'relative',
+        }}
+      >
+        <Container>
+          <Typography
+            variant="h3"
+            align="center"
+            gutterBottom
+            sx={{ fontWeight: 600, color: '#faf9f6' }}
+          >
+            What Our Clients Say
           </Typography>
-          <Button
-            variant="contained"
-            href="/contact"
+
+          {/* 1) The scrolling wrapper */}
+          <Box
             sx={{
-              mt: 2,
-              bgcolor: accentRed,
-              color: '#fff',
-              px: 4,
-              py: 1.5,
-              '&:hover': { bgcolor: '#C1272D' },
+              display: 'flex',
+              // hide native scrollbar
+              overflow: 'hidden',
+              // make sure the rail is twice as wide as its container
+              width: '100%',
+              '& .reviews-rail': {
+                display: 'flex',
+                width: '200%', // twice as wide
+                animation: 'scroll 25s linear infinite',
+              },
+              '@keyframes scroll': {
+                '0%': { transform: 'translateX(0)' },
+                '100%': { transform: 'translateX(-50%)' }, // move left half its width
+              },
             }}
           >
-            Schedule Your Consultation
-          </Button>
-        </motion.div>
+            <Box className="reviews-rail">
+              {/* original 5 reviews */}
+              <GoogleReviews
+                placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
+                apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
+                maxReviews={10}
+              />
+              {/* duplicate them for seamless looping */}
+              <GoogleReviews
+                placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
+                apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
+                maxReviews={10}
+              />
+            </Box>
+          </Box>
+
+          <Box sx={{ textAlign: 'center', mt: 4 }}>
+            <Button
+              variant="outlined"
+              color="error"
+              href={`https://search.google.com/local/writereview?placeId=${process.env.REACT_APP_GOOGLE_PLACE_ID}`}
+              target="_blank"
+            >
+              Leave Us a Review
+            </Button>
+          </Box>
+        </Container>
+      </Box>
+      {/* FINAL CTA */}
+      <Box
+        component="section"
+        sx={{
+          bgcolor: theme.palette.background.paper,
+          py: 8,
+          textAlign: 'center',
+        }}
+      >
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ color: theme.palette.text.secondary }}
+        >
+          Ready to Elevate Your Property?
+        </Typography>
+        <Button
+          variant="contained"
+          href="/contact"
+          sx={{
+            mt: 2,
+            bgcolor: theme.palette.secondary.main,
+            '&:hover': { bgcolor: theme.palette.secondary.dark },
+          }}
+        >
+          Schedule Your Consultation
+        </Button>
       </Box>
     </>
   );

@@ -19,7 +19,6 @@ export default function FirebaseAuth() {
       },
     });
 
-    // Clean up the widget (removes event handlers & UI)
     return () => {
       ui.reset();
     };

@@ -2,16 +2,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 
-// -- Layouts & Authentication
 import { Layout } from './components/Layout';
 import { AdminLayout } from './components/AdminLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
-// -- Pages
 import Login from './pages/Login';
 import HomePage from './pages/HomePage';
 import Location from './pages/Location';
-// import ContactPage from "./pages/ContactPage"; // Not built yet, so commented out
+// import ContactPage from './pages/ContactPage'; // Not implemented yet
 import PublicFaqPage from './pages/PublicFaqPage';
 import AdminPage from './pages/AdminPage';
 import FaqPage from './pages/FaqPage';
@@ -20,14 +18,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ================================================================= */}
-        {/* 1) PUBLIC ROUTES */}
-        {/* ================================================================= */}
-
-        {/* Login (public) */}
+        {/* Public login */}
         <Route path="/login" element={<Login />} />
 
-        {/* Home (public) */}
+        {/* Public routes */}
         <Route
           path="/"
           element={
@@ -36,8 +30,14 @@ export default function App() {
             </Layout>
           }
         />
-
-        {/* Location (public) */}
+        <Route
+          path="/contact"
+          element={
+            <Layout>
+              <Location />
+            </Layout>
+          }
+        />
         <Route
           path="/location"
           element={
@@ -46,20 +46,6 @@ export default function App() {
             </Layout>
           }
         />
-
-        {/* Contact (public)—uncomment once you create ContactPage.tsx */}
-        {/*
-        <Route
-          path="/contact"
-          element={
-            <Layout>
-              <ContactPage />
-            </Layout>
-          }
-        />
-        */}
-
-        {/* FAQ (public) */}
         <Route
           path="/faq"
           element={
@@ -69,22 +55,15 @@ export default function App() {
           }
         />
 
-        {/* ================================================================= */}
-        {/* 2) ADMIN‐ONLY ROUTES (under /admin/*) */}
-        {/* ================================================================= */}
+        {/* Admin-only routes */}
         <Route
           path="/admin/*"
           element={
             <ProtectedRoute redirectTo="/login">
               <AdminLayout>
                 <Routes>
-                  {/* /admin (dashboard) */}
                   <Route index element={<AdminPage />} />
-
-                  {/* /admin/faq (FAQ editor) */}
                   <Route path="faq" element={<FaqPage />} />
-
-                  {/* Any other /admin/* → redirect back to /admin */}
                   <Route path="*" element={<Navigate to="/admin" replace />} />
                 </Routes>
               </AdminLayout>
@@ -92,9 +71,7 @@ export default function App() {
           }
         />
 
-        {/* ================================================================= */}
-        {/* 3) CATCH‐ALL: redirect unknown URLs to “/” */}
-        {/* ================================================================= */}
+        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
