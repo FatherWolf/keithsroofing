@@ -3,32 +3,16 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { useTheme } from '@mui/material/styles';
+import atticlogo from '../images/Seals/attic-breeze-certified-installer.png';
+import bbblogo from '../images/Seals/bbb.png';
+import certainteedlogo from '../images/Seals/CertainTeed-ShingleMaster.png';
+import villagechoicelogo from '../images/Seals/villagechoicesmall.png';
 
 const logos = [
-  {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/BBB_accredited_business_logo.svg/1200px-BBB_accredited_business_logo.svg.png',
-    alt: 'BBB Accredited Business',
-  },
-  {
-    src: 'https://via.placeholder.com/200x80?text=TAMKO+Pro',
-    alt: 'TAMKO Pro',
-  },
-  {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/CertainTeed_logo.svg/1200px-CertainTeed_logo.svg.png',
-    alt: 'CertainTeed',
-  },
-  {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/VELUX_Logo.svg/1200px-VELUX_Logo.svg.png',
-    alt: 'VELUX',
-  },
-  {
-    src: '/images/hsv2024.png',
-    alt: "Hot Springs Village Readers' Choice 2024",
-  },
-  {
-    src: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/AtticBreeze_logo.png/600px-AtticBreeze_logo.png',
-    alt: 'Attic Breeze',
-  },
+  { src: bbblogo, alt: 'BBB Accredited Business' },
+  { src: certainteedlogo, alt: 'CertainTeed' },
+  { src: villagechoicelogo, alt: "Hot Springs Village Readers' Choice 2024" },
+  { src: atticlogo, alt: 'Attic Breeze' },
 ];
 
 export default function CertificationsCarousel() {
@@ -43,7 +27,6 @@ export default function CertificationsCarousel() {
         bgcolor: theme.palette.background.paper,
       }}
     >
-      {/* Heading */}
       <Typography
         id="certifications-heading"
         variant="h4"
@@ -54,7 +37,6 @@ export default function CertificationsCarousel() {
         TRUST THE EXPERTS
       </Typography>
 
-      {/* Divider */}
       <Box
         sx={{
           height: 2,
@@ -65,12 +47,13 @@ export default function CertificationsCarousel() {
         }}
       />
 
-      {/* Logo carousel */}
       <Box
         sx={{
           display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
           overflowX: 'auto',
-          gap: 4,
+          gap: 6,
           px: 2,
           '&::-webkit-scrollbar': { height: 6 },
           '&::-webkit-scrollbar-thumb': {
@@ -82,13 +65,13 @@ export default function CertificationsCarousel() {
       >
         {logos.map((logo, idx) => (
           <Box
-            component="img"
             key={idx}
+            component="img"
             src={logo.src}
             alt={logo.alt}
             loading="lazy"
             sx={{
-              height: 80,
+              height: 100,
               objectFit: 'contain',
               scrollSnapAlign: 'center',
               flexShrink: 0,

@@ -13,6 +13,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Link, useLocation } from 'react-router-dom';
+import Logo from '../images/logo.PNG';
 
 const NAV_ITEMS = [
   { label: 'Home', to: '/' },
@@ -51,7 +52,7 @@ export function NavBar() {
           >
             <Box
               component="img"
-              src="/logo.png"
+              src={Logo}
               alt="Logo"
               sx={{ height: 40, mr: 1 }}
             />
