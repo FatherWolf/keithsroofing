@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Rating from '@mui/material/Rating';
 import { useTheme } from '@mui/material/styles';
 
@@ -38,14 +37,13 @@ export default function GoogleReviews({
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Load the Maps JS API if needed
     if (!window.google?.maps) {
       const script = document.createElement('script');
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
       script.async = true;
       script.onload = fetchReviews;
       script.onerror = () => {
-        setError(false as unknown as string | null);
+        setError('Could not load Google Maps API');
         setLoading(false);
       };
       document.head.appendChild(script);
@@ -82,9 +80,8 @@ export default function GoogleReviews({
     <Box
       component="section"
       aria-labelledby="reviews-heading"
-      sx={{ py: 8, bgcolor: theme.palette.background.paper }}
+      sx={{ py: 4, bgcolor: theme.palette.background.paper }}
     >
-      {/* Scrollable container */}
       <Box
         sx={{
           display: 'flex',
@@ -100,7 +97,7 @@ export default function GoogleReviews({
             sx={{
               flex: '0 0 300px',
               scrollSnapAlign: 'start',
-              bgcolor: 'background.paper',
+              bgcolor: theme.palette.background.paper,
               borderRadius: 2,
               boxShadow: 3,
               p: 2,

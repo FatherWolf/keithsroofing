@@ -20,6 +20,7 @@ import {
 import { Seo } from '../components/Seo';
 import locationHero from '../images/KeithandTruck.jpeg';
 import officeImage from '../images/office.jpeg';
+import locationImage from '../images/locationimg.jpeg';
 
 const CENTER = { lat: 34.63088918301079, lng: -93.05804221042523 };
 
@@ -44,7 +45,7 @@ export default function LocationPage() {
     }
   }, []);
 
-  // Custom palette
+  // Custom colors
   const darkCharcoal = '#161A1D';
   const offWhite = '#F5F3F4';
   const cardBg = '#FFFFFF';
@@ -224,7 +225,7 @@ export default function LocationPage() {
               <CardMedia
                 component="img"
                 height="250"
-                image={locationHero}
+                image={locationImage}
                 alt="Showroom Exterior"
               />
             </Card>
@@ -236,6 +237,57 @@ export default function LocationPage() {
                 alt="Showroom Interior"
               />
             </Card>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* Contact Us Side-box */}
+      <Box component="section" sx={{ bgcolor: offWhite, py: 8 }}>
+        <Container
+          sx={{
+            display: { xs: 'block', md: 'flex' },
+            gap: 4,
+          }}
+        >
+          {/* empty flex-grow filler if you want */}
+          <Box flex={1} />
+
+          {/* sticky aside */}
+          <Box
+            component="aside"
+            flexShrink={0}
+            sx={{
+              p: 3,
+              bgcolor: cardBg,
+              borderRadius: 2,
+              boxShadow: 3,
+              position: { md: 'sticky' },
+              top: theme.spacing(10),
+            }}
+          >
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ color: darkCharcoal, fontWeight: 600 }}
+            >
+              Contact Us
+            </Typography>
+            <Typography variant="body2" paragraph sx={{ color: darkCharcoal }}>
+              Ready for a free estimate or have a roofing question? Reach out
+              and we’ll get back to you right away.
+            </Typography>
+            <Button
+              variant="contained"
+              fullWidth
+              href="/contact"
+              sx={{
+                bgcolor: theme.palette.secondary.main,
+                textTransform: 'none',
+                '&:hover': { bgcolor: theme.palette.secondary.dark },
+              }}
+            >
+              Contact Us
+            </Button>
           </Box>
         </Container>
       </Box>

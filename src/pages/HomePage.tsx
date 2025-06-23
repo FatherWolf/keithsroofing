@@ -14,15 +14,8 @@ import { motion } from 'framer-motion';
 import { Seo } from '../components/Seo';
 import GoogleReviews from '../components/GoogleReview';
 import CertScroll from '../components/CertScroll';
-import heroImage from '../images/IMG_1670.jpeg';
+import heroImage from '../images/ProjectGal1.jpeg';
 import promoVideo from '../images/Advideo.mp4';
-import { keyframes } from '@mui/system';
-
-/* define the scroll animation */
-const scroll = keyframes`
-  0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-`;
 
 export default function HomePage() {
   const theme = useTheme();
@@ -41,7 +34,7 @@ export default function HomePage() {
       title: 'Restorations & Repairs',
       img: 'https://via.placeholder.com/300x200',
     },
-    { title: 'Luxury Materials', img: 'https://via.placeholder.com/300x200' },
+
     { title: 'Annual Inspections', img: 'https://via.placeholder.com/300x200' },
   ];
   const gallery = [
@@ -58,6 +51,7 @@ export default function HomePage() {
         title="Keith's Roofing | Premium Roofing Solutions"
         description="Top-tier roofing for discerning clients."
       />
+
       {/* HERO */}
       <Box
         component="section"
@@ -116,6 +110,7 @@ export default function HomePage() {
           </Button>
         </motion.div>
       </Box>
+
       {/* WHO WE ARE */}
       <Box
         component="section"
@@ -150,6 +145,7 @@ export default function HomePage() {
           </motion.div>
         </Container>
       </Box>
+
       {/* SERVICES */}
       <Box
         component="section"
@@ -210,6 +206,7 @@ export default function HomePage() {
           </Box>
         </Container>
       </Box>
+
       {/* CERTIFICATIONS */}
       <Box
         component="section"
@@ -219,6 +216,7 @@ export default function HomePage() {
           <CertScroll />
         </Container>
       </Box>
+
       {/* GALLERY */}
       <Box
         component="section"
@@ -271,15 +269,7 @@ export default function HomePage() {
       </Box>
 
       {/* GOOGLE REVIEWS */}
-      <Box
-        component="section"
-        sx={{
-          bgcolor: theme.palette.grey[900],
-          py: 8,
-          overflow: 'hidden',
-          position: 'relative',
-        }}
-      >
+      <Box component="section" sx={{ bgcolor: theme.palette.grey[900], py: 8 }}>
         <Container>
           <Typography
             variant="h3"
@@ -290,46 +280,26 @@ export default function HomePage() {
             What Our Clients Say
           </Typography>
 
-          {/* 1) The scrolling wrapper */}
           <Box
             sx={{
               display: 'flex',
-              // hide native scrollbar
-              overflow: 'hidden',
-              // make sure the rail is twice as wide as its container
-              width: '100%',
-              '& .reviews-rail': {
-                display: 'flex',
-                width: '200%', // twice as wide
-                animation: 'scroll 25s linear infinite',
-              },
-              '@keyframes scroll': {
-                '0%': { transform: 'translateX(0)' },
-                '100%': { transform: 'translateX(-50%)' }, // move left half its width
-              },
+              overflowX: 'auto',
+              gap: 2,
+              p: 2,
             }}
           >
-            <Box className="reviews-rail">
-              {/* original 5 reviews */}
-              <GoogleReviews
-                placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
-                apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
-                maxReviews={10}
-              />
-              {/* duplicate them for seamless looping */}
-              <GoogleReviews
-                placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
-                apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
-                maxReviews={10}
-              />
-            </Box>
+            <GoogleReviews
+              placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
+              apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
+              maxReviews={10}
+            />
           </Box>
 
           <Box sx={{ textAlign: 'center', mt: 4 }}>
             <Button
               variant="outlined"
               color="error"
-              href={`https://search.google.com/local/writereview?placeId=${process.env.REACT_APP_GOOGLE_PLACE_ID}`}
+              href={`https://search.google.com/local/writereview?placeid=${process.env.REACT_APP_GOOGLE_PLACE_ID}`}
               target="_blank"
             >
               Leave Us a Review
@@ -337,6 +307,7 @@ export default function HomePage() {
           </Box>
         </Container>
       </Box>
+
       {/* FINAL CTA */}
       <Box
         component="section"
