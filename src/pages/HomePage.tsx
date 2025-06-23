@@ -289,8 +289,8 @@ export default function HomePage() {
             }}
           >
             <GoogleReviews
-              placeId={process.env.REACT_APP_GOOGLE_PLACE_ID!}
-              apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY!}
+              placeId={process.env.REACT_APP_GOOGLE_PLACE_ID || ''}
+              apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}
               maxReviews={10}
             />
           </Box>
