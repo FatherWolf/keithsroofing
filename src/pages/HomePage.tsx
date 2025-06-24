@@ -288,20 +288,11 @@ export default function HomePage() {
               p: 2,
             }}
           >
-
-            {process.env.REACT_APP_GOOGLE_MAPS_API_KEY &&
-            process.env.REACT_APP_GOOGLE_PLACE_ID ? (
-              <GoogleReviews
-                placeId={process.env.REACT_APP_GOOGLE_PLACE_ID}
-                apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}
-                maxReviews={10}
-              />
-            ) : (
-              <Typography sx={{ p: 2 }} color="error">
-                Google Maps is not configured.
-              </Typography>
-            )}
-
+            <GoogleReviews
+              placeId={process.env.REACT_APP_GOOGLE_PLACE_ID || ''}
+              apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}
+              maxReviews={10}
+            />
           </Box>
 
           <Box sx={{ textAlign: 'center', mt: 4 }}>
