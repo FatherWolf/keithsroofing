@@ -48,3 +48,20 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 # keithsroofing
 
 Business site for keiths roofing
+
+## Environment Variables
+
+This project relies on several API keys for Firebase and Google Maps. Copy
+`.env.example` to `.env` and fill in your credentials before running the app:
+
+```bash
+cp .env.example .env
+# then edit .env and add your keys
+```
+
+At a minimum you will need `REACT_APP_GOOGLE_MAPS_API_KEY` and
+`REACT_APP_GOOGLE_PLACE_ID` for the map and reviews components. Without these
+values Google Maps will fail to load.
+
+The application uses a hash based router so refreshing or directly visiting
+`/contact` or other routes will work even on static hosting providers.

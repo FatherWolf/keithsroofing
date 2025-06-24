@@ -27,11 +27,14 @@ const CENTER = { lat: 34.63088918301079, lng: -93.05804221042523 };
 export default function LocationPage() {
   const theme = useTheme();
 
-  // Load only the "places" library
+  // Load only the "places" library if the API key is present
+  const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY!,
+    googleMapsApiKey: googleMapsApiKey ?? '',
     libraries: ['places'],
   });
+
+  const mapUnavailable = !googleMapsApiKey;
 
   // Autocomplete refs & callbacks
   const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
@@ -130,15 +133,20 @@ export default function LocationPage() {
                 height: { xs: 240, md: 400 },
               }}
             >
-              {!isLoaded && !loadError && (
+              {mapUnavailable && (
+                <Typography sx={{ p: 2 }} color="error">
+                  Google Maps is not configured.
+                </Typography>
+              )}
+              {!mapUnavailable && !isLoaded && !loadError && (
                 <Typography sx={{ p: 2 }}>Loading map…</Typography>
               )}
-              {loadError && (
+              {!mapUnavailable && loadError && (
                 <Typography sx={{ p: 2 }} color="error">
                   Failed to load map
                 </Typography>
               )}
-              {isLoaded && (
+              {!mapUnavailable && isLoaded && (
                 <GoogleMap
                   mapContainerStyle={{ width: '100%', height: '100%' }}
                   center={CENTER}
