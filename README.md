@@ -62,8 +62,3 @@ cp .env.example .env
 At a minimum you will need `REACT_APP_GOOGLE_MAPS_API_KEY` and
 `REACT_APP_GOOGLE_PLACE_ID` for the map and reviews components. Without these
 values Google Maps will fail to load.
-
-
-The application uses a hash based router so refreshing or directly visiting
-`/contact` or other routes will work even on static hosting providers.
-
