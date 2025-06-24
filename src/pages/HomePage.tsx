@@ -288,6 +288,7 @@ export default function HomePage() {
               p: 2,
             }}
           >
+
             {process.env.REACT_APP_GOOGLE_MAPS_API_KEY &&
             process.env.REACT_APP_GOOGLE_PLACE_ID ? (
               <GoogleReviews
@@ -300,6 +301,7 @@ export default function HomePage() {
                 Google Maps is not configured.
               </Typography>
             )}
+
           </Box>
 
           <Box sx={{ textAlign: 'center', mt: 4 }}>
