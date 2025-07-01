@@ -1,42 +1,62 @@
 // src/pages/HomePage.tsx
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import {
   Box,
   Container,
   Typography,
   Button,
   Card,
-  CardContent,
+  CardActionArea,
   CardMedia,
+  CardContent,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { motion } from 'framer-motion';
+import { motion, MotionProps } from 'framer-motion';
 import { Seo } from '../components/Seo';
 import GoogleReviews from '../components/GoogleReview';
 import CertScroll from '../components/CertScroll';
+
 import heroImage from '../images/ProjectGal1.jpeg';
 import promoVideo from '../images/Advideo.mp4';
+import customInstall from '../images/CustonInstall.jpeg';
+import restoration from '../images/Restoration.jpeg';
+import annualInspection from '../images/AnnualInspection.jpeg';
+import FinancingModule from '../components/FinancingModule';
+
+// wrap motion.div with MUI styled to get `sx`
+const MotionBox = styled(motion.div)({});
+
+// wrap motion.img with MUI styled to get `sx`
+const MotionImg = styled(motion.img)({});
+
+const fadeUp: MotionProps = {
+  initial: { opacity: 0, y: 30 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.6 },
+};
 
 export default function HomePage() {
   const theme = useTheme();
-  const fadeUp = {
-    initial: { opacity: 0, y: 30 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.6 },
-  };
+
   const services = [
     {
       title: 'Custom Installations',
-      img: 'https://via.placeholder.com/300x200',
+      img: customInstall,
+      href: '/services#custominstallations',
     },
     {
       title: 'Restorations & Repairs',
-      img: 'https://via.placeholder.com/300x200',
+      img: restoration,
+      href: '/services#restorationsandrepairs',
     },
-
-    { title: 'Annual Inspections', img: 'https://via.placeholder.com/300x200' },
+    {
+      title: 'Annual Inspections',
+      img: annualInspection,
+      href: '/services#annualinspections',
+    },
   ];
+
   const gallery = [
     require('../images/ProjectGal1.jpeg'),
     require('../images/ProjectGal2.jpeg'),
@@ -53,8 +73,9 @@ export default function HomePage() {
       />
 
       {/* HERO */}
-      <Box
-        component="section"
+      <MotionBox
+        as="section"
+        {...fadeUp}
         sx={{
           backgroundImage: `url(${heroImage})`,
           backgroundSize: 'cover',
@@ -74,11 +95,10 @@ export default function HomePage() {
             bgcolor: 'rgba(22,26,29,0.75)',
           }}
         />
-        <motion.div
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 1, scale: 1 }}
+        <MotionBox
+          {...fadeUp}
           transition={{ duration: 1 }}
-          style={{
+          sx={{
             position: 'relative',
             zIndex: 1,
             height: '100%',
@@ -87,7 +107,7 @@ export default function HomePage() {
             alignItems: 'center',
             justifyContent: 'center',
             textAlign: 'center',
-            padding: '0 16px',
+            px: 2,
             color: theme.palette.text.primary,
           }}
         >
@@ -97,6 +117,7 @@ export default function HomePage() {
           <Typography variant="h5" gutterBottom>
             Premium Roofing Solutions for Discerning Clients
           </Typography>
+
           <Button
             variant="contained"
             href="/contact"
@@ -104,20 +125,22 @@ export default function HomePage() {
               mt: 2,
               bgcolor: theme.palette.secondary.main,
               '&:hover': { bgcolor: theme.palette.secondary.dark },
+              textTransform: 'none',
             }}
           >
             Request a Free Estimate
           </Button>
-        </motion.div>
-      </Box>
+        </MotionBox>
+      </MotionBox>
 
-      {/* WHO WE ARE */}
-      <Box
-        component="section"
+      {/* WHO WE ARE + WHY CHOOSE US */}
+      <MotionBox
+        as="section"
+        {...fadeUp}
         sx={{ bgcolor: theme.palette.background.default, py: 8 }}
       >
         <Container>
-          <motion.div {...fadeUp}>
+          <MotionBox {...fadeUp}>
             <Typography
               variant="h3"
               align="center"
@@ -126,33 +149,83 @@ export default function HomePage() {
             >
               Who We Are
             </Typography>
-          </motion.div>
-          <motion.div {...fadeUp}>
-            <Box
-              component="video"
-              controls
-              src={promoVideo}
-              sx={{
-                display: 'block',
-                mx: 'auto',
-                width: '100%',
-                maxWidth: 800,
-                border: `4px solid ${theme.palette.secondary.main}`,
-                borderRadius: 2,
-                boxShadow: 3,
-              }}
-            />
-          </motion.div>
+          </MotionBox>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+              gap: 4,
+              mt: 4,
+            }}
+          >
+            <MotionBox {...fadeUp}>
+              <Box
+                component="video"
+                controls
+                src={promoVideo}
+                sx={{
+                  width: '100%',
+                  maxWidth: 800,
+                  border: `4px solid ${theme.palette.secondary.main}`,
+                  borderRadius: 2,
+                  boxShadow: 3,
+                }}
+              />
+            </MotionBox>
+
+            <MotionBox
+              {...fadeUp}
+              sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+            >
+              <Typography variant="h4" sx={{ fontWeight: 600 }}>
+                Why Choose Us To Be Your Roofing Company?
+              </Typography>
+              <Typography variant="body1">
+                Our team has the skills and expertise to tackle most roofing
+                installation or repair projects including shingle roofs, wood
+                shake roofs, flat roofs, tear-outs and nail-overs, rotten wood,
+                hail and storm damage. We provide a free 10-point inspection
+                along with a free estimate.
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 600, mt: 2 }}>
+                Your Trusted Arkansas Roofer
+              </Typography>
+              <Typography variant="body1">
+                At Keith's Roofing, we pride ourselves on being the go-to
+                Arkansas roofer, serving the heart of Central Arkansas with
+                dedication and excellence. We offer Senior (62+) & Military
+                discounts—ask about our referral program!
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 600, mt: 2 }}>
+                Comprehensive Roofing Solutions
+              </Typography>
+              <Typography variant="body1">
+                Whether you need routine maintenance, a full roof replacement,
+                or emergency repair, our skilled pros handle it all with
+                precision and care.
+              </Typography>
+              <Typography variant="h5" sx={{ fontWeight: 600, mt: 2 }}>
+                Why Choose Keith's Roofing?
+              </Typography>
+              <Typography variant="body1">
+                Choosing us means choosing one of Arkansas’s top roofing
+                companies—built on customer satisfaction and exceptional
+                workmanship.
+              </Typography>
+            </MotionBox>
+          </Box>
         </Container>
-      </Box>
+      </MotionBox>
 
       {/* SERVICES */}
-      <Box
-        component="section"
+      <MotionBox
+        as="section"
+        {...fadeUp}
         sx={{ bgcolor: theme.palette.background.default, py: 8 }}
       >
         <Container>
-          <motion.div {...fadeUp}>
+          <MotionBox {...fadeUp}>
             <Typography
               variant="h3"
               align="center"
@@ -161,7 +234,8 @@ export default function HomePage() {
             >
               Our Premium Services
             </Typography>
-          </motion.div>
+          </MotionBox>
+
           <Box
             sx={{
               display: 'grid',
@@ -170,15 +244,20 @@ export default function HomePage() {
               gridTemplateColumns: {
                 xs: '1fr',
                 sm: '1fr 1fr',
-                md: 'repeat(4,1fr)',
+                md: 'repeat(3,1fr)',
               },
             }}
           >
             {services.map((svc, i) => (
-              <motion.div key={i} {...fadeUp} transition={{ delay: i * 0.2 }}>
+              <MotionBox
+                key={svc.title}
+                {...fadeUp}
+                transition={{ delay: i * 0.2 }}
+              >
                 <Card
                   sx={{
                     bgcolor: theme.palette.background.paper,
+                    cursor: 'pointer',
                     '&:hover': {
                       transform: 'translateY(-6px) scale(1.02)',
                       boxShadow: 3,
@@ -186,44 +265,48 @@ export default function HomePage() {
                     transition: 'all 0.3s ease',
                   }}
                 >
-                  <CardMedia
-                    component="img"
-                    height="180"
-                    image={svc.img}
-                    alt={svc.title}
-                  />
-                  <CardContent>
-                    <Typography
-                      variant="h6"
-                      sx={{ color: theme.palette.text.secondary }}
-                    >
-                      {svc.title}
-                    </Typography>
-                  </CardContent>
+                  <CardActionArea href={svc.href}>
+                    <CardMedia
+                      component="img"
+                      height="180"
+                      image={svc.img}
+                      alt={svc.title}
+                    />
+                    <CardContent>
+                      <Typography
+                        variant="h6"
+                        sx={{ color: theme.palette.text.secondary }}
+                      >
+                        {svc.title}
+                      </Typography>
+                    </CardContent>
+                  </CardActionArea>
                 </Card>
-              </motion.div>
+              </MotionBox>
             ))}
           </Box>
         </Container>
-      </Box>
+      </MotionBox>
 
       {/* CERTIFICATIONS */}
-      <Box
-        component="section"
+      <MotionBox
+        as="section"
+        {...fadeUp}
         sx={{ bgcolor: theme.palette.background.default, py: 8 }}
       >
         <Container>
           <CertScroll />
         </Container>
-      </Box>
+      </MotionBox>
 
       {/* GALLERY */}
-      <Box
-        component="section"
+      <MotionBox
+        as="section"
+        {...fadeUp}
         sx={{ bgcolor: theme.palette.background.default, py: 8 }}
       >
         <Container>
-          <motion.div {...fadeUp}>
+          <MotionBox {...fadeUp}>
             <Typography
               variant="h3"
               align="center"
@@ -232,7 +315,7 @@ export default function HomePage() {
             >
               Project Gallery
             </Typography>
-          </motion.div>
+          </MotionBox>
           <Box
             sx={{
               display: 'grid',
@@ -246,18 +329,18 @@ export default function HomePage() {
             }}
           >
             {gallery.map((src, i) => (
-              <motion.img
+              <MotionImg
                 key={i}
                 src={src}
                 alt={`Project ${i + 1}`}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 transition={{ delay: i * 0.1, duration: 0.5 }}
-                style={{
+                sx={{
                   width: '100%',
                   aspectRatio: '1',
                   objectFit: 'cover',
-                  borderRadius: 8,
+                  borderRadius: 2,
                   boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
                   cursor: 'pointer',
                 }}
@@ -266,10 +349,14 @@ export default function HomePage() {
             ))}
           </Box>
         </Container>
-      </Box>
+      </MotionBox>
 
       {/* GOOGLE REVIEWS */}
-      <Box component="section" sx={{ bgcolor: theme.palette.grey[900], py: 8 }}>
+      <MotionBox
+        as="section"
+        {...fadeUp}
+        sx={{ bgcolor: theme.palette.grey[900], py: 8 }}
+      >
         <Container>
           <Typography
             variant="h3"
@@ -279,38 +366,20 @@ export default function HomePage() {
           >
             What Our Clients Say
           </Typography>
-
-          <Box
-            sx={{
-              display: 'flex',
-              overflowX: 'auto',
-              gap: 2,
-              p: 2,
-            }}
-          >
+          <Box sx={{ display: 'flex', overflowX: 'auto', gap: 2, p: 2 }}>
             <GoogleReviews
               placeId={process.env.REACT_APP_GOOGLE_PLACE_ID || ''}
               apiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY || ''}
               maxReviews={10}
             />
           </Box>
-
-          <Box sx={{ textAlign: 'center', mt: 4 }}>
-            <Button
-              variant="outlined"
-              color="error"
-              href={`https://search.google.com/local/writereview?placeid=${process.env.REACT_APP_GOOGLE_PLACE_ID}`}
-              target="_blank"
-            >
-              Leave Us a Review
-            </Button>
-          </Box>
         </Container>
-      </Box>
+      </MotionBox>
 
       {/* FINAL CTA */}
-      <Box
-        component="section"
+      <MotionBox
+        as="section"
+        {...fadeUp}
         sx={{
           bgcolor: theme.palette.background.paper,
           py: 8,
@@ -331,11 +400,12 @@ export default function HomePage() {
             mt: 2,
             bgcolor: theme.palette.secondary.main,
             '&:hover': { bgcolor: theme.palette.secondary.dark },
+            textTransform: 'none',
           }}
         >
           Schedule Your Consultation
         </Button>
-      </Box>
+      </MotionBox>
     </>
   );
 }

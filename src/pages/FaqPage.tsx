@@ -1,228 +1,83 @@
-
+// src/pages/FaqPage.tsx
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  Container,
-  TextField,
-  Typography,
+import { Box, Container, Typography } from '@mui/material';
+import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
+import { db } from '../firebase';
 
-} from '@mui/material';
-import { ImageUploader } from '../components/ImageUploader';
-import { PodcastUploader } from '../components/PodcastUploader';
-import {
-  collection,
-  getDocs,
-  addDoc,
-  Timestamp,
-  DocumentData,
-  onSnapshot,
-} from 'firebase/firestore';
-
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
-import { db, storage, auth } from '../firebase';
-import { useAuthState } from 'react-firebase-hooks/auth';
-
-interface FaqItem {
-  id: string;
-  question: string;
-  answer: string;
-
-  imageUrl?: string;
-  podcastUrl?: string;
-}
-
-interface MediaItem {
+interface PodcastItem {
   id: string;
   name: string;
   url: string;
   type: 'image' | 'podcast';
-
 }
 
+// 1) YOUR STATIC FAQ LIST
+const STATIC_FAQS = [
+  {
+    question: 'What types of roofs do you install?',
+    answer:
+      'We install asphalt shingles, metal roofing, wood shakes, and flat roofs—tailored to your home’s needs.',
+  },
+  {
+    question: 'How do I know if my roof needs repair?',
+    answer:
+      'Look for missing or curled shingles, water stains on your ceiling, or granules in your gutters. We also offer a free 10-point inspection.',
+  },
+  {
+    question: 'Do you handle insurance claims?',
+    answer:
+      'Yes—we’ll document damage, provide detailed estimates, and work directly with your insurance company to simplify the process.',
+  },
+];
+
 export default function FaqPage() {
-  const [faqs, setFaqs] = useState<FaqItem[]>([]);
-  const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState('');
-  const [imageUrl, setImageUrl] = useState<string>();
-  const [podcastUrl, setPodcastUrl] = useState<string>();
-  const [images, setImages] = useState<MediaItem[]>([]);
-  const [podcasts, setPodcasts] = useState<MediaItem[]>([]);
-  const [user] = useAuthState(auth);
+  const [podcasts, setPodcasts] = useState<PodcastItem[]>([]);
 
   useEffect(() => {
-    const faqUnsub = onSnapshot(collection(db, 'faqs'), (snap) => {
-      const items: FaqItem[] = snap.docs.map((d) => ({
+    const unsub = onSnapshot(collection(db, 'media'), (snap) => {
+      const all = snap.docs.map((d) => ({
         id: d.id,
         ...(d.data() as DocumentData),
-      })) as FaqItem[];
-      setFaqs(items);
+      })) as PodcastItem[];
+      setPodcasts(all.filter((m) => m.type === 'podcast'));
     });
-
-    const mediaUnsub = onSnapshot(collection(db, 'media'), (snap) => {
-      const items: MediaItem[] = snap.docs.map((d) => ({
-        id: d.id,
-        ...(d.data() as DocumentData),
-      })) as MediaItem[];
-      setImages(items.filter((m) => m.type === 'image'));
-      setPodcasts(items.filter((m) => m.type === 'podcast'));
-    });
-
-    return () => {
-      faqUnsub();
-      mediaUnsub();
-    };
+    return () => unsub();
   }, []);
-
-  const uploadFile = async (file: File, folder: string) => {
-    const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    return await getDownloadURL(storageRef);
-  };
-
-  const handleImageUpload = async (files: File[]) => {
-    if (files.length === 0) return;
-    try {
-      const url = await uploadFile(files[0], 'faq_images');
-      setImageUrl(url);
-    } catch (err) {
-      console.error('Image upload failed:', err);
-    }
-  };
-
-  const handlePodcastUpload = async (files: File[]) => {
-    if (files.length === 0) return;
-    try {
-      const url = await uploadFile(files[0], 'faq_podcasts');
-      setPodcastUrl(url);
-    } catch (err) {
-      console.error('Podcast upload failed:', err);
-    }
-  };
-
-  const handleAddFaq = async () => {
-    if (!question || !answer) return;
-    try {
-      const docRef = await addDoc(collection(db, 'faqs'), {
-        question,
-        answer,
-        imageUrl: imageUrl || null,
-        podcastUrl: podcastUrl || null,
-        createdAt: Timestamp.now(),
-      });
-
-      setFaqs((prev) => [
-        {
-          id: docRef.id,
-          question,
-          answer,
-          imageUrl,
-          podcastUrl,
-        },
-        ...prev,
-      ]);
-
-      setQuestion('');
-      setAnswer('');
-      setImageUrl(undefined);
-      setPodcastUrl(undefined);
-    } catch (err) {
-      console.error('Error saving FAQ:', err);
-    }
-  };
 
   return (
     <Container sx={{ py: 4 }}>
+      {/* STATIC FAQs */}
       <Typography variant="h4" gutterBottom>
-
         Frequently Asked Questions
       </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {faqs.map((f) => (
-          <Box key={f.id} sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>
-
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        {STATIC_FAQS.map((f, i) => (
+          <Box key={i} sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>
             <Typography variant="h6">{f.question}</Typography>
             <Typography variant="body2" paragraph>
               {f.answer}
             </Typography>
-            {f.imageUrl && (
-
-              <Box
-                component="img"
-                src={f.imageUrl}
-                alt="FAQ related"
-                sx={{ maxWidth: '100%', mb: 1 }}
-              />
-            )}
-            {f.podcastUrl && (
-              <Box component="audio" controls src={f.podcastUrl} sx={{ width: '100%' }} />
-            )}
           </Box>
         ))}
       </Box>
 
-      {images.length > 0 && (
-        <Box mt={4}>
-          <Typography variant="h5" gutterBottom>
-            Videos
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-            {images.map((img) => (
-              <Box
-                key={img.id}
-                component="img"
-                src={img.url}
-                alt={img.name}
-                sx={{ maxWidth: 300, width: '100%', borderRadius: 1 }}
-              />
-            ))}
-          </Box>
-        </Box>
-      )}
-
+      {/* DYNAMIC PODCASTS */}
       {podcasts.length > 0 && (
-        <Box mt={4}>
+        <Box mt={6}>
           <Typography variant="h5" gutterBottom>
-            Podcasts
+            Recent Podcasts
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {podcasts.map((p) => (
-              <Box key={p.id} component="audio" controls src={p.url} />
+              <Box
+                key={p.id}
+                component="audio"
+                controls
+                src={p.url}
+                sx={{ width: '100%' }}
+              />
             ))}
           </Box>
-        </Box>
-      )}
-
-      {user && (
-        <Box mt={4} sx={{ borderTop: 1, borderColor: 'divider', pt: 3 }}>
-          <Typography variant="h5" gutterBottom>
-            Add FAQ
-          </Typography>
-
-          <TextField
-            label="Question"
-            fullWidth
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-
-          <TextField
-            label="Answer"
-            fullWidth
-            multiline
-            minRows={3}
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            sx={{ mb: 2 }}
-          />
-          <ImageUploader onUpload={handleImageUpload} />
-          <PodcastUploader onUpload={handlePodcastUpload} />
-          <Button variant="contained" onClick={handleAddFaq}>
-
-            Save FAQ
-          </Button>
         </Box>
       )}
     </Container>

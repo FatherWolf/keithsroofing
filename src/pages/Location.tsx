@@ -1,5 +1,5 @@
 // src/pages/LocationPage.tsx
-import React, { useRef, useCallback } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
@@ -8,15 +8,9 @@ import {
   Card,
   CardContent,
   CardMedia,
-  TextField,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import {
-  useLoadScript,
-  GoogleMap,
-  Marker,
-  Autocomplete,
-} from '@react-google-maps/api';
+import { useLoadScript, GoogleMap, Marker } from '@react-google-maps/api';
 import { Seo } from '../components/Seo';
 import locationHero from '../images/KeithandTruck.jpeg';
 import officeImage from '../images/office.jpeg';
@@ -27,26 +21,12 @@ const CENTER = { lat: 34.63088918301079, lng: -93.05804221042523 };
 export default function LocationPage() {
   const theme = useTheme();
 
-  // Load only the "places" library
   const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey,
     libraries: ['places'],
   });
 
-  // Autocomplete refs & callbacks
-  const autoRef = useRef<google.maps.places.Autocomplete | null>(null);
-  const onLoadAuto = useCallback((auto: google.maps.places.Autocomplete) => {
-    autoRef.current = auto;
-  }, []);
-  const onPlaceChanged = useCallback(() => {
-    const place = autoRef.current?.getPlace();
-    if (place?.geometry?.location) {
-      // e.g. pan the map: mapRef.current?.panTo(place.geometry.location)
-    }
-  }, []);
-
-  // Custom colors
   const darkCharcoal = '#161A1D';
   const offWhite = '#F5F3F4';
   const cardBg = '#FFFFFF';
@@ -101,16 +81,16 @@ export default function LocationPage() {
         </Container>
       </Box>
 
-      {/* Map + Autocomplete + Address */}
+      {/* Map + Address + Contact */}
       <Box component="section" sx={{ bgcolor: offWhite, py: 8 }}>
         <Container>
           <Typography
-            variant="h4"
+            variant="h2"
             align="center"
             gutterBottom
             sx={{ color: darkCharcoal, fontWeight: 600 }}
           >
-            Find Us & Search Nearby
+            Stop by our office
           </Typography>
 
           <Box
@@ -119,6 +99,7 @@ export default function LocationPage() {
               gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
               gap: 4,
               mt: 4,
+              alignItems: 'center',
             }}
           >
             {/* Map Card */}
@@ -150,23 +131,9 @@ export default function LocationPage() {
               )}
             </Card>
 
-            {/* Autocomplete + Address Card */}
+            {/* Address + Contact Stack */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Autocomplete onLoad={onLoadAuto} onPlaceChanged={onPlaceChanged}>
-                <TextField
-                  label="Search for nearby places"
-                  variant="outlined"
-                  fullWidth
-                />
-              </Autocomplete>
-
-              <Card
-                sx={{
-                  bgcolor: cardBg,
-                  boxShadow: 3,
-                  borderRadius: 2,
-                }}
-              >
+              <Card sx={{ bgcolor: cardBg, boxShadow: 3, borderRadius: 2 }}>
                 <CardContent>
                   <Typography
                     variant="h5"
@@ -195,6 +162,38 @@ export default function LocationPage() {
                     }}
                   >
                     Get Directions
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card sx={{ bgcolor: cardBg, boxShadow: 3, borderRadius: 2 }}>
+                <CardContent>
+                  <Typography
+                    variant="h5"
+                    gutterBottom
+                    sx={{ color: darkCharcoal, fontWeight: 600 }}
+                  >
+                    Contact Us
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    paragraph
+                    sx={{ color: darkCharcoal }}
+                  >
+                    Ready for a free estimate or have a roofing question? Reach
+                    out and we’ll get back to you right away.
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    href="/contact"
+                    sx={{
+                      bgcolor: theme.palette.secondary.main,
+                      textTransform: 'none',
+                      '&:hover': { bgcolor: theme.palette.secondary.dark },
+                    }}
+                  >
+                    Contact Us
                   </Button>
                 </CardContent>
               </Card>
@@ -238,57 +237,6 @@ export default function LocationPage() {
                 alt="Showroom Interior"
               />
             </Card>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* Contact Us Side-box */}
-      <Box component="section" sx={{ bgcolor: offWhite, py: 8 }}>
-        <Container
-          sx={{
-            display: { xs: 'block', md: 'flex' },
-            gap: 4,
-          }}
-        >
-          {/* empty flex-grow filler if you want */}
-          <Box flex={1} />
-
-          {/* sticky aside */}
-          <Box
-            component="aside"
-            flexShrink={0}
-            sx={{
-              p: 3,
-              bgcolor: cardBg,
-              borderRadius: 2,
-              boxShadow: 3,
-              position: { md: 'sticky' },
-              top: theme.spacing(10),
-            }}
-          >
-            <Typography
-              variant="h5"
-              gutterBottom
-              sx={{ color: darkCharcoal, fontWeight: 600 }}
-            >
-              Contact Us
-            </Typography>
-            <Typography variant="body2" paragraph sx={{ color: darkCharcoal }}>
-              Ready for a free estimate or have a roofing question? Reach out
-              and we’ll get back to you right away.
-            </Typography>
-            <Button
-              variant="contained"
-              fullWidth
-              href="/contact"
-              sx={{
-                bgcolor: theme.palette.secondary.main,
-                textTransform: 'none',
-                '&:hover': { bgcolor: theme.palette.secondary.dark },
-              }}
-            >
-              Contact Us
-            </Button>
           </Box>
         </Container>
       </Box>

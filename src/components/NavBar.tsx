@@ -18,6 +18,7 @@ import Logo from '../images/logo.PNG';
 const NAV_ITEMS = [
   { label: 'Home', to: '/' },
   { label: 'Contact', to: '/contact' },
+  { label: 'Services', to: '/services' },
   { label: 'FAQ', to: '/faq' },
 ];
 
