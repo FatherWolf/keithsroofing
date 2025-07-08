@@ -27,6 +27,12 @@ It correctly bundles React in production mode and optimizes the build for the be
 The build is minified and the filenames include the hashes.\
 Your app is ready to be deployed!
 
+When building make sure to run `npm run build` so Create React App can read your
+`.env` file and embed the values in the production bundle. (Running `npm build`
+does **not** load `.env`.) The `build` script now uses a small wrapper that
+loads `dotenv` before invoking `react-scripts build`, guaranteeing your
+environment variables are available during the build.
+
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 ### `npm run eject`
