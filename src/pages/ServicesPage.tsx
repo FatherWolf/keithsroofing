@@ -6,11 +6,12 @@ import { Seo } from '../components/Seo';
 import FinancingModule from '../components/FinancingModule';
 import customInstallImg from '../images/IMG_4332.jpeg';
 
-const SECTIONS: { id: string; label: string; content: string }[] = [
+const SECTIONS = [
   {
     id: 'custom-installation',
     label: 'Custom Installation',
-    content: '', // we handle this one manually below
+    // we render this one manually (with image + paragraphs + button) below
+    content: '',
   },
   {
     id: 'restorations-repairs',
@@ -24,12 +25,6 @@ const SECTIONS: { id: string; label: string; content: string }[] = [
     content:
       'Stay ahead of leaks and costly repairs—our free 10-point inspection keeps your roof in peak condition year-round.',
   },
-  {
-    id: 'insurance-claims',
-    label: 'Insurance Claims',
-    content:
-      'We document damage, provide detailed estimates, and work directly with your insurer—making your claim process painless.',
-  },
 ];
 
 export default function ServicesPage() {
@@ -39,7 +34,7 @@ export default function ServicesPage() {
     <>
       <Seo
         title="Keith’s Roofing | Our Services"
-        description="Explore our custom installations, restorations & repairs, annual inspections, and hassle-free insurance claims."
+        description="Explore our custom installations, restorations & repairs, and annual inspections."
       />
 
       <Container sx={{ py: 6 }}>
@@ -82,8 +77,8 @@ export default function ServicesPage() {
           <Typography variant="body1" paragraph>
             With GreenSky® Financing you can get an instant credit decision
             online, often pay no interest if paid in full within the promotional
-            period, and spread your project cost out over flexible, fixed
-            monthly payments—no prepayment penalties and a 100% digital
+            period, and spread your project cost out over fixed, flexible
+            monthly payments—no prepayment penalties and a fully digital
             application.
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -113,7 +108,7 @@ export default function ServicesPage() {
               alignItems: 'center',
             }}
           >
-            {/* Image */}
+            {/* Image slot */}
             <Box
               component="img"
               src={customInstallImg}
@@ -125,20 +120,17 @@ export default function ServicesPage() {
               }}
             />
 
-            {/* Text & Button */}
+            {/* Text & button */}
             <Box>
               <Typography variant="body1" paragraph>
-                At Keith’s Roofing, we specialize in professional roof
-                installations and replacements that combine durability with
-                striking curb appeal. Whether you’re building new or upgrading
-                an existing roof, our expert crew guides you through material
-                selection and delivers a flawless installation—on time and on
-                budget.
+                Whether you’re building new or upgrading an existing roof,
+                Keith’s Roofing delivers a flawless installation combining
+                durability with striking curb appeal—on time and on budget.
               </Typography>
               <Typography variant="body1" paragraph>
                 We partner with leading shingle, metal, and flat-roof
-                manufacturers to offer a tailored solution for every home,
-                ensuring the perfect balance of performance, style, and value.
+                manufacturers to tailor the perfect balance of performance,
+                style, and value for your home.
               </Typography>
               <Button
                 variant="contained"
@@ -156,7 +148,7 @@ export default function ServicesPage() {
           </Box>
         </Box>
 
-        {/* — REST OF YOUR SECTIONS — */}
+        {/* — RESTORATIONS & REPAIRS / ANNUAL INSPECTIONS — */}
         {SECTIONS.filter((sec) => sec.id !== 'custom-installation').map(
           (sec) => (
             <Box
@@ -168,10 +160,7 @@ export default function ServicesPage() {
               <Typography
                 variant="h4"
                 gutterBottom
-                sx={{
-                  color: theme.palette.text.primary,
-                  fontWeight: 600,
-                }}
+                sx={{ color: theme.palette.text.primary, fontWeight: 600 }}
               >
                 {sec.label}
               </Typography>

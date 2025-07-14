@@ -1,28 +1,33 @@
 // src/components/Layout.tsx
 import React from 'react';
-import Box from '@mui/material/Box';
-import CssBaseline from '@mui/material/CssBaseline';
-import { NavBar } from './NavBar';
+import { AppBar, Toolbar, Button, Box } from '@mui/material';
+import { Link as RouterLink } from 'react-router-dom';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <CssBaseline />
-      <Box
-        sx={{
-          backgroundColor: '#161A1D', // dark charcoal
-          color: '#F5F3F4', // light text
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <NavBar />
-        <Box component="main" sx={{ flex: 1 }}>
-          {children}
-        </Box>
-        {/* <Footer /> */}
-      </Box>
+      <AppBar position="static" color="transparent" elevation={0}>
+        <Toolbar>
+          <Box sx={{ flexGrow: 1 }}>
+            <Button component={RouterLink} to="/" color="inherit">
+              Home
+            </Button>
+            <Button component={RouterLink} to="/services" color="inherit">
+              Services
+            </Button>
+            <Button component={RouterLink} to="/location" color="inherit">
+              Location
+            </Button>
+            <Button component={RouterLink} to="/contact" color="inherit">
+              Contact
+            </Button>
+            <Button component={RouterLink} to="/faq" color="inherit">
+              FAQ
+            </Button>
+          </Box>
+        </Toolbar>
+      </AppBar>
+      <main>{children}</main>
     </>
   );
 }

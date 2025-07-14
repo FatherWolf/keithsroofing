@@ -7,7 +7,6 @@ import {
   Button,
   Card,
   CardContent,
-  CardMedia,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useLoadScript, GoogleMap, Marker } from '@react-google-maps/api';
@@ -20,10 +19,8 @@ const CENTER = { lat: 34.63088918301079, lng: -93.05804221042523 };
 
 export default function LocationPage() {
   const theme = useTheme();
-
-  const googleMapsApiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '';
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey,
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_MAPS_API_KEY || '',
     libraries: ['places'],
   });
 
@@ -38,7 +35,7 @@ export default function LocationPage() {
         description="Visit our showroom next to the Walmart Supercenter on Highway 7 in Hot Springs, Arkansas. Discover premium roofing craftsmanship firsthand."
       />
 
-      {/* Hero Banner */}
+      {/* Hero */}
       <Box
         component="section"
         sx={{
@@ -54,11 +51,7 @@ export default function LocationPage() {
         }}
       >
         <Box
-          sx={{
-            position: 'absolute',
-            inset: 0,
-            bgcolor: 'rgba(22,26,29,0.6)',
-          }}
+          sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.6)' }}
         />
         <Container
           sx={{
@@ -76,40 +69,29 @@ export default function LocationPage() {
             align="center"
             sx={{ color: '#faf9f6', fontWeight: 600 }}
           >
-            Come Visit Our Showroom
+            Find Us & Stop By
           </Typography>
         </Container>
       </Box>
 
-      {/* Map + Address + Contact */}
+      {/* Map + Details */}
       <Box component="section" sx={{ bgcolor: offWhite, py: 8 }}>
         <Container>
-          <Typography
-            variant="h2"
-            align="center"
-            gutterBottom
-            sx={{ color: darkCharcoal, fontWeight: 600 }}
-          >
-            Stop by our office
-          </Typography>
-
           <Box
             sx={{
               display: 'grid',
-              gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+              gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' },
               gap: 4,
-              mt: 4,
-              alignItems: 'center',
+              alignItems: 'stretch', // <-- stretch children full height
             }}
           >
-            {/* Map Card */}
+            {/* Map */}
             <Card
               sx={{
-                bgcolor: cardBg,
                 boxShadow: 3,
                 borderRadius: 2,
                 overflow: 'hidden',
-                height: { xs: 240, md: 400 },
+                height: { xs: 240, md: '100%' }, // mobile fixed, desktop fill
               }}
             >
               {!isLoaded && !loadError && (
@@ -131,14 +113,15 @@ export default function LocationPage() {
               )}
             </Card>
 
-            {/* Address + Contact Stack */}
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Card sx={{ bgcolor: cardBg, boxShadow: 3, borderRadius: 2 }}>
+            {/* Right Column */}
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+              {/* Address */}
+              <Card sx={{ boxShadow: 3, borderRadius: 2, bgcolor: cardBg }}>
                 <CardContent>
                   <Typography
                     variant="h5"
                     gutterBottom
-                    sx={{ color: darkCharcoal, fontWeight: 600 }}
+                    sx={{ fontWeight: 600, color: darkCharcoal }}
                   >
                     3560 N Highway 7, Hot Springs, AR
                   </Typography>
@@ -152,7 +135,6 @@ export default function LocationPage() {
                   </Typography>
                   <Button
                     variant="contained"
-                    size="large"
                     href={`https://www.google.com/maps/dir/?api=1&destination=${CENTER.lat},${CENTER.lng}`}
                     target="_blank"
                     sx={{
@@ -166,12 +148,13 @@ export default function LocationPage() {
                 </CardContent>
               </Card>
 
-              <Card sx={{ bgcolor: cardBg, boxShadow: 3, borderRadius: 2 }}>
+              {/* Contact */}
+              <Card sx={{ boxShadow: 3, borderRadius: 2, bgcolor: cardBg }}>
                 <CardContent>
                   <Typography
                     variant="h5"
                     gutterBottom
-                    sx={{ color: darkCharcoal, fontWeight: 600 }}
+                    sx={{ fontWeight: 600, color: darkCharcoal }}
                   >
                     Contact Us
                   </Typography>
@@ -188,8 +171,8 @@ export default function LocationPage() {
                     fullWidth
                     href="/contact"
                     sx={{
-                      bgcolor: theme.palette.secondary.main,
                       textTransform: 'none',
+                      bgcolor: theme.palette.secondary.main,
                       '&:hover': { bgcolor: theme.palette.secondary.dark },
                     }}
                   >
@@ -209,7 +192,7 @@ export default function LocationPage() {
             variant="h4"
             align="center"
             gutterBottom
-            sx={{ color: '#faf9f6', fontWeight: 600 }}
+            sx={{ fontWeight: 600, color: '#faf9f6' }}
           >
             Our Showroom
           </Typography>
@@ -221,22 +204,18 @@ export default function LocationPage() {
               mt: 4,
             }}
           >
-            <Card sx={{ boxShadow: 3, borderRadius: 2, overflow: 'hidden' }}>
-              <CardMedia
-                component="img"
-                height="250"
-                image={locationImage}
-                alt="Showroom Exterior"
-              />
-            </Card>
-            <Card sx={{ boxShadow: 3, borderRadius: 2, overflow: 'hidden' }}>
-              <CardMedia
-                component="img"
-                height="250"
-                image={officeImage}
-                alt="Showroom Interior"
-              />
-            </Card>
+            <Box
+              component="img"
+              src={locationImage}
+              alt="Showroom Exterior"
+              sx={{ width: '100%', borderRadius: 2, boxShadow: 3 }}
+            />
+            <Box
+              component="img"
+              src={officeImage}
+              alt="Showroom Interior"
+              sx={{ width: '100%', borderRadius: 2, boxShadow: 3 }}
+            />
           </Box>
         </Container>
       </Box>
