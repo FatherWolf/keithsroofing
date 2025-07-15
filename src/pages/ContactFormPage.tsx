@@ -125,6 +125,36 @@ export default function ContactFormPage() {
           Submit
         </Button>
       </Box>
+      <Typography
+        variant="body2"
+        color="textSecondary"
+        align="center"
+        sx={{ mt: 4 }}
+      >
+        We respect your privacy. Your information will only be used to respond
+      </Typography>
+      <Box
+        sx={{
+          mt: 4,
+          textAlign: 'center',
+        }}
+      >
+        <Typography variant="body1" gutterBottom>
+          Need immediate assistance? Call us anytime, day or night:
+        </Typography>
+        <Typography variant="h6">
+          <a
+            href="tel:5019222020"
+            style={{
+              color: theme.palette.secondary.main,
+              textDecoration: 'none',
+              fontWeight: 600,
+            }}
+          >
+            (501) 922-2020
+          </a>
+        </Typography>
+      </Box>
     </Container>
   );
 }

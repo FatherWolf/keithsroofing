@@ -69,7 +69,7 @@ export default function LocationPage() {
             align="center"
             sx={{ color: '#faf9f6', fontWeight: 600 }}
           >
-            Find Us & Stop By
+            Visit Our Hot Springs Showroom
           </Typography>
         </Container>
       </Box>
@@ -192,10 +192,9 @@ export default function LocationPage() {
             variant="h4"
             align="center"
             gutterBottom
-            sx={{ fontWeight: 600, color: '#faf9f6' }}
-          >
-            Our Showroom
-          </Typography>
+            sx={{ color: '#faf9f6', fontWeight: 600 }}
+          ></Typography>
+
           <Box
             sx={{
               display: 'grid',
@@ -204,18 +203,24 @@ export default function LocationPage() {
               mt: 4,
             }}
           >
-            <Box
-              component="img"
-              src={locationImage}
-              alt="Showroom Exterior"
-              sx={{ width: '100%', borderRadius: 2, boxShadow: 3 }}
-            />
-            <Box
-              component="img"
-              src={officeImage}
-              alt="Showroom Interior"
-              sx={{ width: '100%', borderRadius: 2, boxShadow: 3 }}
-            />
+            {[
+              { src: locationImage, alt: 'Showroom Sign' },
+              { src: officeImage, alt: 'Showroom Exterior' },
+            ].map((img, i) => (
+              <Box
+                key={i}
+                component="img"
+                src={img.src}
+                alt={img.alt}
+                sx={{
+                  width: '100%',
+                  height: { xs: 200, sm: 250, md: 300 },
+                  objectFit: 'cover',
+                  borderRadius: 2,
+                  boxShadow: 3,
+                }}
+              />
+            ))}
           </Box>
         </Container>
       </Box>

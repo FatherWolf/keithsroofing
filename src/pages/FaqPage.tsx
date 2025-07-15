@@ -16,7 +16,7 @@ const STATIC_FAQS = [
   {
     question: 'What types of roofs do you install?',
     answer:
-      'We install asphalt shingles, metal roofing, wood shakes, and flat roofs—tailored to your home’s needs.',
+      'We install asphalt shingles, metal roofing, and flat roofs—tailored to your home’s needs.',
   },
   {
     question: 'How do I know if my roof needs repair?',
