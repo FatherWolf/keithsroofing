@@ -1,4 +1,3 @@
-// src/pages/ContactFormPage.tsx
 import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
@@ -12,6 +11,10 @@ import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import emailjs from '@emailjs/browser';
 
+/**
+ * ContactFormPage
+ * Renders a roofing estimate contact form and handles email submissions via EmailJS.
+ */
 export default function ContactFormPage() {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -24,34 +27,71 @@ export default function ContactFormPage() {
   const [address, setAddress] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Initialize EmailJS with your public key
   useEffect(() => {
-    // initialize EmailJS with your Public Key
-    emailjs.init(process.env.REACT_APP_EMAILJS_PUBLIC_KEY!);
+    const userId = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+    console.log('EmailJS Public Key:', userId);
+    if (!userId) {
+      console.error('EmailJS public key is missing.');
+      setError('Configuration error. Please contact support.');
+      return;
+    }
+    // Set allowed origin in EmailJS dashboard for your domain (e.g., localhost:3000)
+    emailjs.init(userId);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formRef.current) return;
+    setError(null);
+
+    if (!formRef.current) {
+      setError('Form initialization error.');
+      return;
+    }
+
+    const serviceId = process.env.REACT_APP_EMAILJS_SERVICE_ID;
+    const templateId = process.env.REACT_APP_EMAILJS_TEMPLATE_ID;
+    const userId = process.env.REACT_APP_EMAILJS_PUBLIC_KEY;
+
+    console.log('Sending with:', {
+      serviceId,
+      templateId,
+      userId,
+      form: formRef.current,
+    });
+    if (!serviceId || !templateId || !userId) {
+      console.error('EmailJS config missing:', {
+        serviceId,
+        templateId,
+        userId,
+      });
+      setError('Configuration error. Please contact support.');
+      return;
+    }
 
     try {
-      await emailjs.sendForm(
-        process.env.REACT_APP_EMAILJS_SERVICE_ID!,
-        process.env.REACT_APP_EMAILJS_TEMPLATE_ID!,
+      const response = await emailjs.sendForm(
+        serviceId,
+        templateId,
         formRef.current,
-        process.env.REACT_APP_EMAILJS_PUBLIC_KEY!
+        userId
       );
+      console.log('EmailJS response:', response);
       setSubmitted(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error('EmailJS error:', err);
+      const msg = err?.text || err?.message || 'Unknown error';
+      setError(`Failed to send message: ${msg}`);
     }
   };
 
-  // after confirmation, redirect home
+  // Redirect after successful submission
   useEffect(() => {
     if (submitted) {
-      const t = setTimeout(() => navigate('/'), 3000);
-      return () => clearTimeout(t);
+      const timer = setTimeout(() => navigate('/'), 3000);
+      return () => clearTimeout(timer);
     }
   }, [submitted, navigate]);
 
@@ -84,7 +124,8 @@ export default function ContactFormPage() {
           gap: 2,
         }}
       >
-        {/* hidden timestamp field */}
+        {error && <Alert severity="error">{error}</Alert>}
+
         <input type="hidden" name="time" value={new Date().toLocaleString()} />
 
         <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
