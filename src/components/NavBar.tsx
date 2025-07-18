@@ -1,25 +1,28 @@
 // src/components/NavBar.tsx
 import React, { useState } from 'react';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import useMediaQuery from '@mui/material/useMediaQuery';
+import { Link, useLocation } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Drawer,
+  List,
+  ListItemButton,
+  ListItemText,
+  Box,
+  Button,
+  useMediaQuery,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { Link, useLocation } from 'react-router-dom';
 import Logo from '../images/logo.PNG';
 
 const NAV_ITEMS = [
   { label: 'Home', to: '/' },
-  { label: 'Contact', to: '/contact' },
   { label: 'Services', to: '/services' },
-  { label: 'FAQ', to: '/faq' },
+  { label: 'Location', to: '/location' },
+  { label: 'Contact', to: '/contact' },
+  { label: 'Gallery', to: '/gallery' }, // ← updated
 ];
 
 export function NavBar() {
@@ -32,23 +35,16 @@ export function NavBar() {
 
   return (
     <>
-      <AppBar
-        position="static"
-        sx={{
-          backgroundColor: theme.palette.common.black,
-          color: theme.palette.common.white,
-        }}
-      >
+      <AppBar position="static" sx={{ backgroundColor: '#000', color: '#fff' }}>
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 4 } }}>
-          {/* Logo */}
           <Box
             component={Link}
             to="/"
             sx={{
               display: 'flex',
               alignItems: 'center',
-              textDecoration: 'none',
               color: 'inherit',
+              textDecoration: 'none',
             }}
           >
             <Box
@@ -58,23 +54,14 @@ export function NavBar() {
               sx={{ height: 40, mr: 1 }}
             />
             {!isMobile && (
-              <Box
-                component="span"
-                sx={{ fontWeight: 700, fontSize: '1.25rem' }}
-              >
+              <Box sx={{ fontWeight: 700, fontSize: '1.25rem' }}>
                 Keith's Roofing
               </Box>
             )}
           </Box>
 
-          {/* Desktop Links or Mobile Menu Icon */}
           {isMobile ? (
-            <IconButton
-              onClick={toggleDrawer}
-              edge="end"
-              aria-label="menu"
-              sx={{ color: 'inherit' }}
-            >
+            <IconButton onClick={toggleDrawer} sx={{ color: 'inherit' }}>
               <MoreVertIcon fontSize="large" />
             </IconButton>
           ) : (
@@ -83,7 +70,7 @@ export function NavBar() {
                 const active = pathname === item.to;
                 return (
                   <Button
-                    key={item.label}
+                    key={item.to}
                     component={Link}
                     to={item.to}
                     color="inherit"
@@ -106,42 +93,33 @@ export function NavBar() {
         </Toolbar>
       </AppBar>
 
-      {/* Mobile Drawer */}
       <Drawer
         anchor="left"
         open={open}
         onClose={toggleDrawer}
-        PaperProps={{
-          sx: {
-            backgroundColor: theme.palette.common.black,
-            color: theme.palette.common.white,
-          },
-        }}
+        PaperProps={{ sx: { backgroundColor: '#000', color: '#fff' } }}
       >
         <List sx={{ width: 240 }}>
-          {NAV_ITEMS.map((item) => {
-            const active = pathname === item.to;
-            return (
-              <ListItemButton
-                key={item.label}
-                component={Link}
-                to={item.to}
-                onClick={toggleDrawer}
-                sx={{
-                  color: 'inherit',
-                  borderLeft: active
+          {NAV_ITEMS.map((item) => (
+            <ListItemButton
+              key={item.to}
+              component={Link}
+              to={item.to}
+              onClick={toggleDrawer}
+              sx={{
+                color: 'inherit',
+                borderLeft:
+                  pathname === item.to
                     ? `4px solid ${theme.palette.error.main}`
                     : '4px solid transparent',
-                  '&:hover': { backgroundColor: theme.palette.grey[900] },
-                }}
-              >
-                <ListItemText
-                  primary={item.label}
-                  primaryTypographyProps={{ color: 'inherit' }}
-                />
-              </ListItemButton>
-            );
-          })}
+              }}
+            >
+              <ListItemText
+                primary={item.label}
+                primaryTypographyProps={{ color: 'inherit' }}
+              />
+            </ListItemButton>
+          ))}
         </List>
       </Drawer>
     </>

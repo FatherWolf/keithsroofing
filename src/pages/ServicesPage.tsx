@@ -5,26 +5,12 @@ import { useTheme } from '@mui/material/styles';
 import { Seo } from '../components/Seo';
 import FinancingModule from '../components/FinancingModule';
 import customInstallImg from '../images/IMG_4332.jpeg';
+import restorationBeforeImg from '../images/before.jpg';
+import restorationAfterImg from '../images/after.jpg';
 
 const SECTIONS = [
-  {
-    id: 'custom-installation',
-    label: 'Custom Installation',
-    // we render this one manually (with image + paragraphs + button) below
-    content: '',
-  },
-  {
-    id: 'restorations-repairs',
-    label: 'Restorations & Repairs',
-    content:
-      'Got damage from storms, age, or wear? We’ll restore your roof’s integrity quickly and with minimal disruption to your life.',
-  },
-  {
-    id: 'annual-inspections',
-    label: 'Annual Inspections',
-    content:
-      'Stay ahead of leaks and costly repairs—our free 10-point inspection keeps your roof in peak condition year-round.',
-  },
+  { id: 'custom-installation', label: 'Custom Installation', content: '' },
+  { id: 'restorations-repairs', label: 'Restorations & Repairs', content: '' },
 ];
 
 export default function ServicesPage() {
@@ -34,7 +20,7 @@ export default function ServicesPage() {
     <>
       <Seo
         title="Keith’s Roofing | Our Services"
-        description="Explore our custom installations, restorations & repairs, and annual inspections."
+        description="Explore our custom installations and restorations & repairs."
       />
 
       <Container sx={{ py: 6 }}>
@@ -77,8 +63,8 @@ export default function ServicesPage() {
           <Typography variant="body1" paragraph>
             With GreenSky® Financing you can get an instant credit decision
             online, often pay no interest if paid in full within the promotional
-            period, and spread your project cost out over fixed, flexible
-            monthly payments—no prepayment penalties and a fully digital
+            period, and spread your project cost out over flexible, fixed
+            monthly payments—no prepayment penalties and a 100% digital
             application.
           </Typography>
           <Box sx={{ display: 'flex', justifyContent: 'center' }}>
@@ -108,19 +94,13 @@ export default function ServicesPage() {
               alignItems: 'center',
             }}
           >
-            {/* Image slot */}
             <Box
               component="img"
               src={customInstallImg}
               alt="Professional roof installation"
-              sx={{
-                width: '100%',
-                borderRadius: 2,
-                boxShadow: 3,
-              }}
+              sx={{ width: '100%', borderRadius: 2, boxShadow: 3 }}
             />
 
-            {/* Text & button */}
             <Box>
               <Typography variant="body1" paragraph>
                 Whether you’re building new or upgrading an existing roof,
@@ -148,31 +128,89 @@ export default function ServicesPage() {
           </Box>
         </Box>
 
-        {/* — RESTORATIONS & REPAIRS / ANNUAL INSPECTIONS — */}
-        {SECTIONS.filter((sec) => sec.id !== 'custom-installation').map(
-          (sec) => (
-            <Box
-              key={sec.id}
-              id={sec.id}
-              component="section"
-              sx={{ py: 4, scrollMarginTop: '80px' }}
-            >
+        {/* — RESTORATIONS & REPAIRS — */}
+        <Box
+          id="restorations-repairs"
+          component="section"
+          sx={{ py: 4, scrollMarginTop: '80px' }}
+        >
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ color: theme.palette.text.primary, fontWeight: 600 }}
+          >
+            Restorations & Repairs
+          </Typography>
+
+          {/* before & after images with overlays */}
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+              gap: 2,
+              mb: 3,
+            }}
+          >
+            {/* BEFORE image */}
+            <Box sx={{ position: 'relative' }}>
+              <Box
+                component="img"
+                src={restorationBeforeImg}
+                alt="Before Roof Restoration"
+                sx={{ width: '100%', borderRadius: 2, boxShadow: 3 }}
+              />
               <Typography
-                variant="h4"
-                gutterBottom
-                sx={{ color: theme.palette.text.primary, fontWeight: 600 }}
+                variant="subtitle2"
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  left: 8,
+                  bgcolor: 'rgba(0,0,0,0.6)',
+                  color: '#fff',
+                  px: 1,
+                  py: 0.5,
+                  borderRadius: 1,
+                }}
               >
-                {sec.label}
-              </Typography>
-              <Typography
-                variant="body1"
-                sx={{ color: theme.palette.text.secondary }}
-              >
-                {sec.content}
+                Before
               </Typography>
             </Box>
-          )
-        )}
+
+            {/* AFTER image */}
+            <Box sx={{ position: 'relative' }}>
+              <Box
+                component="img"
+                src={restorationAfterImg}
+                alt="After Roof Restoration"
+                sx={{ width: '100%', borderRadius: 2, boxShadow: 3 }}
+              />
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  position: 'absolute',
+                  top: 8,
+                  left: 8,
+                  bgcolor: 'rgba(0,0,0,0.6)',
+                  color: '#fff',
+                  px: 1,
+                  py: 0.5,
+                  borderRadius: 1,
+                }}
+              >
+                After
+              </Typography>
+            </Box>
+          </Box>
+
+          <Typography
+            variant="body1"
+            sx={{ color: theme.palette.text.secondary }}
+            paragraph
+          >
+            Got damage from storms, age, or wear? We’ll restore your roof’s
+            integrity quickly and with minimal disruption to your life.
+          </Typography>
+        </Box>
       </Container>
     </>
   );

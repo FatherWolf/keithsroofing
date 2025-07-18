@@ -1,69 +1,96 @@
 // src/pages/FaqPage.tsx
 import React, { useEffect, useState } from 'react';
-import { Box, Container, Typography } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  Card,
+  CardMedia,
+  CardContent,
+  Alert,
+} from '@mui/material';
 import { collection, onSnapshot, DocumentData } from 'firebase/firestore';
 import { db } from '../firebase';
 
-interface PodcastItem {
+interface MediaItem {
   id: string;
   name: string;
   url: string;
   type: 'image' | 'podcast';
 }
 
-// 1) YOUR STATIC FAQ LIST
-const STATIC_FAQS = [
-  {
-    question: 'What types of roofs do you install?',
-    answer:
-      'We install asphalt shingles, metal roofing, and flat roofs—tailored to your home’s needs.',
-  },
-  {
-    question: 'How do I know if my roof needs repair?',
-    answer:
-      'Look for missing or curled shingles, water stains on your ceiling, or granules in your gutters. We also offer a free 10-point inspection.',
-  },
-  {
-    question: 'Do you handle insurance claims?',
-    answer:
-      'Yes—we’ll document damage, provide detailed estimates, and work directly with your insurance company to simplify the process.',
-  },
-];
-
 export default function FaqPage() {
-  const [podcasts, setPodcasts] = useState<PodcastItem[]>([]);
+  const [media, setMedia] = useState<MediaItem[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'media'), (snap) => {
-      const all = snap.docs.map((d) => ({
-        id: d.id,
-        ...(d.data() as DocumentData),
-      })) as PodcastItem[];
-      setPodcasts(all.filter((m) => m.type === 'podcast'));
-    });
+    const unsub = onSnapshot(
+      collection(db, 'media'),
+      (snap) => {
+        const items = snap.docs.map((d) => ({
+          id: d.id,
+          ...(d.data() as DocumentData),
+        })) as MediaItem[];
+        setMedia(items);
+      },
+      (err) => setError(err.message)
+    );
     return () => unsub();
   }, []);
 
+  const images = media.filter((m) => m.type === 'image');
+  const podcasts = media.filter((m) => m.type === 'podcast');
+
   return (
     <Container sx={{ py: 4 }}>
-      {/* STATIC FAQs */}
       <Typography variant="h4" gutterBottom>
-        Frequently Asked Questions
+        Portfolio & Podcasts
       </Typography>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-        {STATIC_FAQS.map((f, i) => (
-          <Box key={i} sx={{ borderBottom: 1, borderColor: 'divider', pb: 2 }}>
-            <Typography variant="h6">{f.question}</Typography>
-            <Typography variant="body2" paragraph>
-              {f.answer}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
 
-      {/* DYNAMIC PODCASTS */}
-      {podcasts.length > 0 && (
-        <Box mt={6}>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {/* IMAGES GRID */}
+      {images.length > 0 ? (
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 2,
+            mb: 6,
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, 1fr)',
+              md: 'repeat(3, 1fr)',
+            },
+          }}
+        >
+          {images.map((img) => (
+            <Card key={img.id} sx={{ boxShadow: 1 }}>
+              <CardMedia
+                component="img"
+                src={img.url}
+                alt={img.name}
+                sx={{ height: 200, objectFit: 'cover', cursor: 'pointer' }}
+                onClick={() => window.open(img.url, '_blank')}
+              />
+              <CardContent>
+                <Typography variant="caption" noWrap>
+                  {img.name}
+                </Typography>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      ) : (
+        <Typography>No portfolio images to display yet.</Typography>
+      )}
+
+      {/* PODCASTS */}
+      {podcasts.length > 0 ? (
+        <Box sx={{ mb: 6 }}>
           <Typography variant="h5" gutterBottom>
             Recent Podcasts
           </Typography>
@@ -79,6 +106,8 @@ export default function FaqPage() {
             ))}
           </Box>
         </Box>
+      ) : (
+        <Typography>No podcasts published yet.</Typography>
       )}
     </Container>
   );

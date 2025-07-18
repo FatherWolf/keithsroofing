@@ -1,3 +1,4 @@
+// src/App.tsx
 import React from 'react';
 import {
   BrowserRouter,
@@ -33,10 +34,12 @@ export default function App() {
           }
         >
           <Route index element={<HomePage />} />
-          <Route path="location" element={<LocationPage />} />
-          <Route path="contact" element={<ContactFormPage />} />
-          <Route path="faq" element={<FaqPage />} />
-          <Route path="services" element={<ServicesPage />} />
+          <Route path="/location" element={<LocationPage />} />
+          <Route path="/contact" element={<ContactFormPage />} />
+          <Route path="/services" element={<ServicesPage />} />
+          <Route path="/gallery" element={<FaqPage />} />{' '}
+          {/* ← render FaqPage at /gallery */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
 
         <Route
@@ -50,10 +53,9 @@ export default function App() {
           }
         >
           <Route index element={<AdminPage />} />
-          <Route path="faq" element={<FaqPage />} />
+          <Route path="gallery" element={<FaqPage />} />
+          <Route path="*" element={<Navigate to="/admin" replace />} />
         </Route>
-
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

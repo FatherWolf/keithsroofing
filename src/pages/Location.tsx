@@ -14,6 +14,7 @@ import { Seo } from '../components/Seo';
 import locationHero from '../images/KeithandTruck.jpeg';
 import officeImage from '../images/office.jpeg';
 import locationImage from '../images/locationimg.jpeg';
+import { Link as RouterLink } from 'react-router-dom';
 
 const CENTER = { lat: 34.63088918301079, lng: -93.05804221042523 };
 
@@ -26,7 +27,6 @@ export default function LocationPage() {
 
   const darkCharcoal = '#161A1D';
   const offWhite = '#F5F3F4';
-  const cardBg = '#FFFFFF';
 
   return (
     <>
@@ -82,7 +82,7 @@ export default function LocationPage() {
               display: 'grid',
               gridTemplateColumns: { xs: '1fr', md: '2fr 1fr' },
               gap: 4,
-              alignItems: 'stretch', // <-- stretch children full height
+              alignItems: 'stretch',
             }}
           >
             {/* Map */}
@@ -91,7 +91,7 @@ export default function LocationPage() {
                 boxShadow: 3,
                 borderRadius: 2,
                 overflow: 'hidden',
-                height: { xs: 240, md: '100%' }, // mobile fixed, desktop fill
+                height: { xs: 240, md: '100%' },
               }}
             >
               {!isLoaded && !loadError && (
@@ -113,10 +113,10 @@ export default function LocationPage() {
               )}
             </Card>
 
-            {/* Right Column */}
+            {/* Details Column */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {/* Address */}
-              <Card sx={{ boxShadow: 3, borderRadius: 2, bgcolor: cardBg }}>
+              <Card sx={{ boxShadow: 3, borderRadius: 2, bgcolor: offWhite }}>
                 <CardContent>
                   <Typography
                     variant="h5"
@@ -139,7 +139,7 @@ export default function LocationPage() {
                     target="_blank"
                     sx={{
                       bgcolor: theme.palette.error.main,
-                      color: '#fff',
+                      color: '#fff', // force white text
                       textTransform: 'none',
                     }}
                   >
@@ -149,7 +149,7 @@ export default function LocationPage() {
               </Card>
 
               {/* Contact */}
-              <Card sx={{ boxShadow: 3, borderRadius: 2, bgcolor: cardBg }}>
+              <Card sx={{ boxShadow: 3, borderRadius: 2, bgcolor: offWhite }}>
                 <CardContent>
                   <Typography
                     variant="h5"
@@ -167,13 +167,14 @@ export default function LocationPage() {
                     out and we’ll get back to you right away.
                   </Typography>
                   <Button
-                    variant="contained"
+                    component={RouterLink}
+                    to="/contact"
                     fullWidth
-                    href="/contact"
                     sx={{
-                      textTransform: 'none',
                       bgcolor: theme.palette.secondary.main,
+                      color: '#fff', // force white text
                       '&:hover': { bgcolor: theme.palette.secondary.dark },
+                      textTransform: 'none',
                     }}
                   >
                     Contact Us
@@ -193,8 +194,9 @@ export default function LocationPage() {
             align="center"
             gutterBottom
             sx={{ color: '#faf9f6', fontWeight: 600 }}
-          ></Typography>
-
+          >
+            Our Showroom
+          </Typography>
           <Box
             sx={{
               display: 'grid',

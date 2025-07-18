@@ -22,6 +22,7 @@ import customInstall from '../images/CustonInstall.jpeg';
 import restoration from '../images/Restoration.jpeg';
 import annualInspection from '../images/AnnualInspection.jpeg';
 import FinancingModule from '../components/FinancingModule';
+import { Link as RouterLink } from 'react-router-dom';
 
 // wrap motion.div with MUI styled to get `sx`
 const MotionBox = styled(motion.div)({});
@@ -117,14 +118,14 @@ export default function HomePage() {
           <Typography variant="h5" gutterBottom>
             Premium Roofing Solutions for Discerning Clients
           </Typography>
-
           <Button
-            variant="contained"
-            href="/contact"
+            component={RouterLink}
+            to="/contact"
             sx={{
               mt: 2,
-              bgcolor: theme.palette.secondary.main,
-              '&:hover': { bgcolor: theme.palette.secondary.dark },
+              backgroundColor: theme.palette.secondary.main,
+              color: '#fff', // force white text
+              '&:hover': { backgroundColor: theme.palette.secondary.dark },
               textTransform: 'none',
             }}
           >
@@ -394,12 +395,13 @@ export default function HomePage() {
           Ready to Elevate Your Property?
         </Typography>
         <Button
-          variant="contained"
-          href="/contact"
+          component={RouterLink}
+          to="/contact"
           sx={{
             mt: 2,
-            bgcolor: theme.palette.secondary.main,
-            '&:hover': { bgcolor: theme.palette.secondary.dark },
+            backgroundColor: theme.palette.secondary.main,
+            color: '#fff', // force white text
+            '&:hover': { backgroundColor: theme.palette.secondary.dark },
             textTransform: 'none',
           }}
         >
