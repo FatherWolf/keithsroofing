@@ -8,11 +8,6 @@ import customInstallImg from '../images/IMG_4332.jpeg';
 import restorationBeforeImg from '../images/before.jpg';
 import restorationAfterImg from '../images/after.jpg';
 
-const SECTIONS = [
-  { id: 'custom-installation', label: 'Custom Installation', content: '' },
-  { id: 'restorations-repairs', label: 'Restorations & Repairs', content: '' },
-];
-
 export default function ServicesPage() {
   const theme = useTheme();
 
@@ -20,7 +15,7 @@ export default function ServicesPage() {
     <>
       <Seo
         title="Keith’s Roofing | Our Services"
-        description="Explore our custom installations and restorations & repairs."
+        description="Explore our custom installations, restorations & repairs, and annual inspections."
       />
 
       <Container sx={{ py: 6 }}>
@@ -35,15 +30,15 @@ export default function ServicesPage() {
             mb: 4,
           }}
         >
-          {SECTIONS.map((sec) => (
-            <Button
-              key={sec.id}
-              href={`#${sec.id}`}
-              sx={{ textTransform: 'none' }}
-            >
-              {sec.label}
-            </Button>
-          ))}
+          <Button href="#custom-installation" sx={{ textTransform: 'none' }}>
+            Custom Installation
+          </Button>
+          <Button href="#restorations-repairs" sx={{ textTransform: 'none' }}>
+            Restorations & Repairs
+          </Button>
+          <Button href="#annual-inspections" sx={{ textTransform: 'none' }}>
+            Annual Inspections
+          </Button>
         </Box>
 
         {/* — NEED FINANCING? — */}
@@ -142,7 +137,7 @@ export default function ServicesPage() {
             Restorations & Repairs
           </Typography>
 
-          {/* before & after images with overlays */}
+          {/* before & after images */}
           <Box
             sx={{
               display: 'grid',
@@ -151,7 +146,6 @@ export default function ServicesPage() {
               mb: 3,
             }}
           >
-            {/* BEFORE image */}
             <Box sx={{ position: 'relative' }}>
               <Box
                 component="img"
@@ -175,8 +169,6 @@ export default function ServicesPage() {
                 Before
               </Typography>
             </Box>
-
-            {/* AFTER image */}
             <Box sx={{ position: 'relative' }}>
               <Box
                 component="img"
@@ -202,13 +194,28 @@ export default function ServicesPage() {
             </Box>
           </Box>
 
-          <Typography
-            variant="body1"
-            sx={{ color: theme.palette.text.secondary }}
-            paragraph
-          >
+          <Typography variant="body1" paragraph>
             Got damage from storms, age, or wear? We’ll restore your roof’s
             integrity quickly and with minimal disruption to your life.
+          </Typography>
+        </Box>
+
+        {/* — ANNUAL INSPECTIONS — */}
+        <Box
+          id="annual-inspections"
+          component="section"
+          sx={{ py: 4, scrollMarginTop: '80px' }}
+        >
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ color: theme.palette.text.primary, fontWeight: 600 }}
+          >
+            Annual Inspections
+          </Typography>
+          <Typography variant="body1">
+            Stay ahead of leaks and costly repairs—our free 10-point inspection
+            keeps your roof in peak condition year-round.
           </Typography>
         </Box>
       </Container>

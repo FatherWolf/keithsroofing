@@ -21,7 +21,6 @@ import promoVideo from '../images/Advideo.mp4';
 import customInstall from '../images/CustonInstall.jpeg';
 import restoration from '../images/Restoration.jpeg';
 import annualInspection from '../images/AnnualInspection.jpeg';
-import FinancingModule from '../components/FinancingModule';
 import { Link as RouterLink } from 'react-router-dom';
 
 // wrap motion.div with MUI styled to get `sx`
@@ -44,17 +43,17 @@ export default function HomePage() {
     {
       title: 'Custom Installations',
       img: customInstall,
-      href: '/services#custominstallations',
+      href: '/services#custom-installation',
     },
     {
       title: 'Restorations & Repairs',
       img: restoration,
-      href: '/services#restorationsandrepairs',
+      href: '/services#restorations-repairs',
     },
     {
       title: 'Annual Inspections',
       img: annualInspection,
-      href: '/services#annualinspections',
+      href: '/services#annual-inspections',
     },
   ];
 

@@ -7,8 +7,10 @@ import atticlogo from '../images/Seals/attic-breeze-certified-installer.png';
 import bbblogo from '../images/Seals/bbb.png';
 import certainteedlogo from '../images/Seals/CertainTeed-ShingleMaster.png';
 import villagechoicelogo from '../images/Seals/villagechoicesmall.png';
+import tamkopro from '../images/Seals/tamkopro.png';
 
 const logos = [
+  { src: tamkopro, alt: 'Tamko Pro' },
   { src: bbblogo, alt: 'BBB Accredited Business' },
   { src: certainteedlogo, alt: 'CertainTeed' },
   { src: villagechoicelogo, alt: "Hot Springs Village Readers' Choice 2024" },
