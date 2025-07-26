@@ -1,39 +1,44 @@
-// src/components/ImageUploader.tsx
+// src/components/VideoUploader.tsx
 import React, { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Box, Typography, Button, LinearProgress, TextField } from '@mui/material';
 
-interface ImageUploaderProps {
-  onUpload: (files: File[], descriptions: string[]) => Promise<void> | void;
+interface VideoUploaderProps {
+  onUpload: (files: File[], titles: string[], descriptions: string[]) => Promise<void> | void;
 }
 
-export function ImageUploader({ onUpload }: ImageUploaderProps) {
+export function VideoUploader({ onUpload }: VideoUploaderProps) {
   const [files, setFiles] = useState<File[]>([]);
+  const [titles, setTitles] = useState<string[]>([]);
   const [descriptions, setDescriptions] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
 
   const onDrop = useCallback((accepted: File[]) => {
     setFiles((prev) => [...prev, ...accepted]);
+    setTitles((prev) => [...prev, ...new Array(accepted.length).fill('')]);
     setDescriptions((prev) => [...prev, ...new Array(accepted.length).fill('')]);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/*': [] },
+    accept: { 
+      'video/*': ['.mp4', '.mov', '.avi', '.mkv', '.webm'],
+    },
     multiple: true,
   });
 
   const handleUploadClick = async () => {
     if (files.length === 0) return;
-    console.log('ImageUploader: Starting upload of', files.length, 'files');
+    console.log('VideoUploader: Starting upload of', files.length, 'files');
     setUploading(true);
     try {
-      await onUpload(files, descriptions);
-      console.log('ImageUploader: Upload completed successfully');
+      await onUpload(files, titles, descriptions);
+      console.log('VideoUploader: Upload completed successfully');
     } catch (err) {
-      console.error('ImageUploader: Upload failed:', err);
+      console.error('VideoUploader: Upload failed:', err);
     }
     setFiles([]);
+    setTitles([]);
     setDescriptions([]);
     setUploading(false);
   };
@@ -55,8 +60,11 @@ export function ImageUploader({ onUpload }: ImageUploaderProps) {
         <input {...getInputProps()} />
         <Typography>
           {isDragActive
-            ? 'Drop images here…'
-            : 'Drag & drop images here, or click to select'}
+            ? 'Drop video files here…'
+            : 'Drag & drop video files here, or click to select'}
+        </Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+          Supported formats: MP4, MOV, AVI, MKV, WebM
         </Typography>
       </Box>
 
@@ -67,8 +75,21 @@ export function ImageUploader({ onUpload }: ImageUploaderProps) {
               <Typography variant="body2" sx={{ mb: 1, fontWeight: 'bold' }}>{file.name}</Typography>
               <TextField
                 fullWidth
+                label="Video Title"
+                placeholder="Enter a title for this video..."
+                value={titles[index] || ''}
+                onChange={(e) => {
+                  const newTitles = [...titles];
+                  newTitles[index] = e.target.value;
+                  setTitles(newTitles);
+                }}
+                size="small"
+                sx={{ mb: 1 }}
+              />
+              <TextField
+                fullWidth
                 label="Description (optional)"
-                placeholder="Enter a description for this image..."
+                placeholder="Enter a description for this video..."
                 value={descriptions[index] || ''}
                 onChange={(e) => {
                   const newDescriptions = [...descriptions];
@@ -76,6 +97,8 @@ export function ImageUploader({ onUpload }: ImageUploaderProps) {
                   setDescriptions(newDescriptions);
                 }}
                 size="small"
+                multiline
+                rows={2}
                 sx={{ mb: 1 }}
               />
               {uploading && (
@@ -93,7 +116,7 @@ export function ImageUploader({ onUpload }: ImageUploaderProps) {
               onClick={handleUploadClick}
               disabled={uploading}
             >
-              {uploading ? 'Uploading…' : 'Upload Images'}
+              {uploading ? 'Uploading…' : 'Upload Videos'}
             </Button>
           </Box>
         </Box>

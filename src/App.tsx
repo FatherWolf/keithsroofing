@@ -16,9 +16,10 @@ import Login from './pages/Login';
 import HomePage from './pages/HomePage';
 import LocationPage from './pages/Location';
 import ContactFormPage from './pages/ContactFormPage';
-import FaqPage from './pages/FaqPage';
+import GalleryPage from './pages/GalleryPage';
 import AdminPage from './pages/AdminPage';
 import ServicesPage from './pages/ServicesPage';
+import RoofColorsPage from './pages/RoofColorsPage';
 
 export default function App() {
   return (
@@ -37,8 +38,8 @@ export default function App() {
           <Route path="/location" element={<LocationPage />} />
           <Route path="/contact" element={<ContactFormPage />} />
           <Route path="/services" element={<ServicesPage />} />
-          <Route path="/gallery" element={<FaqPage />} />{' '}
-          {/* ← render FaqPage at /gallery */}
+          <Route path="/gallery" element={<GalleryPage />} />
+          <Route path="/roof-colors" element={<RoofColorsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
 
@@ -53,7 +54,7 @@ export default function App() {
           }
         >
           <Route index element={<AdminPage />} />
-          <Route path="gallery" element={<FaqPage />} />
+          <Route path="gallery" element={<GalleryPage />} />
           <Route path="*" element={<Navigate to="/admin" replace />} />
         </Route>
       </Routes>

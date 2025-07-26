@@ -15,10 +15,11 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { useAuthState } from 'react-firebase-hooks/auth';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import { ImageUploader } from '../components/ImageUploader';
-import { PodcastUploader } from '../components/PodcastUploader';
+import { VideoUploader } from '../components/VideoUploader';
 import {
   collection,
   getDocs,
@@ -30,26 +31,34 @@ import {
   DocumentData,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../firebase';
+import { db, storage, auth } from '../firebase';
 
 interface MediaItem {
   id: string;
   name: string;
   url: string;
-  type: 'image' | 'podcast';
+  type: 'image' | 'video';
+  title?: string;
+  description?: string;
 }
 
 export default function AdminPage() {
+  const [user, loading, error] = useAuthState(auth);
   const [tabIndex, setTabIndex] = useState(0);
   const [images, setImages] = useState<MediaItem[]>([]);
-  const [podcasts, setPodcasts] = useState<MediaItem[]>([]);
+  const [videos, setVideos] = useState<MediaItem[]>([]);
   const [loadingMedia, setLoadingMedia] = useState(false);
   const [replaceAccept, setReplaceAccept] = useState<
-    '' | 'image/*' | 'audio/*'
+    '' | 'image/*' | 'video/*'
   >('');
   const replaceHandlerRef = useRef<(file: File) => Promise<void> | void>(
     () => {}
   );
+
+  // Debug authentication status
+  useEffect(() => {
+    console.log('Auth state:', { user: user?.uid, loading, error });
+  }, [user, loading, error]);
 
   // Hidden file input used for replace operations
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -65,9 +74,9 @@ export default function AdminPage() {
           ...(d.data() as DocumentData),
         })) as MediaItem[];
         setImages(items.filter((i) => i.type === 'image'));
-        setPodcasts(items.filter((i) => i.type === 'podcast'));
+        setVideos(items.filter((i) => i.type === 'video'));
       } catch (err) {
-        console.error('Error fetching media:', err);
+        console.error('Error fetching media from Firestore:', err);
       } finally {
         setLoadingMedia(false);
       }
@@ -77,22 +86,56 @@ export default function AdminPage() {
 
   // Utility to upload to Storage and return download URL
   const uploadFile = async (file: File, folder: string): Promise<string> => {
-    const storageRef = ref(storage, `${folder}/${Date.now()}_${file.name}`);
-    await uploadBytes(storageRef, file);
-    return await getDownloadURL(storageRef);
+    console.log('Starting upload for:', file.name, 'to folder:', folder);
+    
+    if (!user) {
+      throw new Error('User must be authenticated to upload files');
+    }
+    
+    try {
+      const fileName = `${Date.now()}_${file.name}`;
+      const storageRef = ref(storage, `${folder}/${fileName}`);
+      console.log('Storage ref created:', storageRef.fullPath);
+      
+      // Create metadata to help with CORS
+      const metadata = {
+        contentType: file.type,
+        customMetadata: {
+          'uploaded-by': user.uid,
+          'upload-time': new Date().toISOString()
+        }
+      };
+      
+      console.log('Uploading with Firebase SDK and metadata...');
+      const uploadResult = await uploadBytes(storageRef, file, metadata);
+      console.log('Upload completed:', uploadResult);
+      
+      const downloadURL = await getDownloadURL(storageRef);
+      console.log('Download URL obtained:', downloadURL);
+      
+      return downloadURL;
+    } catch (error) {
+      console.error('Upload failed:', error);
+      console.error('Error details:', {
+        code: (error as any)?.code,
+        message: (error as any)?.message,
+        serverResponse: (error as any)?.serverResponse
+      });
+      throw error;
+    }
   };
 
   // Handle deleting a media document (and updating local state)
-  const handleDelete = async (id: string, type: 'image' | 'podcast') => {
+  const handleDelete = async (id: string, type: 'image' | 'video') => {
     try {
       await deleteDoc(doc(db, 'media', id));
       if (type === 'image') {
         setImages((prev) => prev.filter((i) => i.id !== id));
       } else {
-        setPodcasts((prev) => prev.filter((p) => p.id !== id));
+        setVideos((prev) => prev.filter((p) => p.id !== id));
       }
     } catch (err) {
-      console.error('Failed to delete media:', err);
+      // Handle error - could show user notification
     }
   };
 
@@ -100,10 +143,10 @@ export default function AdminPage() {
   const handleReplace = async (
     id: string,
     file: File,
-    type: 'image' | 'podcast'
+    type: 'image' | 'video'
   ) => {
     try {
-      const folder = type === 'image' ? 'uploads/images' : 'uploads/podcasts';
+      const folder = type === 'image' ? 'uploads/images' : 'uploads/videos';
       const url = await uploadFile(file, folder);
       await updateDoc(doc(db, 'media', id), {
         url,
@@ -113,56 +156,89 @@ export default function AdminPage() {
       const updater = (items: MediaItem[]) =>
         items.map((i) => (i.id === id ? { ...i, url, name: file.name } : i));
       if (type === 'image') setImages((prev) => updater(prev));
-      else setPodcasts((prev) => updater(prev));
+      else setVideos((prev) => updater(prev));
     } catch (err) {
-      console.error('Failed to replace media:', err);
+      // Handle error - could show user notification
     }
   };
 
   // Triggered by ImageUploader: upload new images, save to Firestore, update state
-  const handleImageUpload = async (files: File[]) => {
+  const handleImageUpload = async (files: File[], descriptions: string[]) => {
+    console.log('Starting image upload for', files.length, 'files');
     const newItems: MediaItem[] = [];
-    for (const file of files) {
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const description = descriptions[i] || '';
       try {
+        console.log('Processing file:', file.name);
         const url = await uploadFile(file, 'uploads/images');
+        console.log('File uploaded, saving to Firestore...');
+        
         const docRef = await addDoc(collection(db, 'media'), {
           type: 'image',
           name: file.name,
           url,
+          description,
           createdAt: Timestamp.now(),
         });
-        newItems.push({ id: docRef.id, name: file.name, url, type: 'image' });
+        console.log('Saved to Firestore with ID:', docRef.id);
+        
+        newItems.push({ id: docRef.id, name: file.name, url, type: 'image', description });
       } catch (err) {
-        console.error('Error uploading image:', err);
+        console.error('Error uploading file:', file.name, err);
       }
     }
+    
+    console.log('Adding', newItems.length, 'new items to state');
     setImages((prev) => [...newItems, ...prev]);
   };
 
-  // Triggered by PodcastUploader: upload new podcasts, save to Firestore, update state
-  const handlePodcastUpload = async (files: File[]) => {
+  // Triggered by VideoUploader: upload new videos, save to Firestore, update state
+  const handleVideoUpload = async (files: File[], titles: string[], descriptions: string[]) => {
+    console.log('Starting video upload for', files.length, 'files');
     const newItems: MediaItem[] = [];
-    for (const file of files) {
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const title = titles[i] || '';
+      const description = descriptions[i] || '';
       try {
-        const url = await uploadFile(file, 'uploads/podcasts');
+        console.log('Processing video file:', file.name);
+        const url = await uploadFile(file, 'uploads/videos');
+        console.log('Video uploaded, saving to Firestore...');
+        
         const docRef = await addDoc(collection(db, 'media'), {
-          type: 'podcast',
+          type: 'video',
           name: file.name,
+          title,
           url,
+          description,
           createdAt: Timestamp.now(),
         });
-        newItems.push({ id: docRef.id, name: file.name, url, type: 'podcast' });
+        console.log('Saved to Firestore with ID:', docRef.id);
+        
+        newItems.push({ 
+          id: docRef.id, 
+          name: file.name, 
+          title, 
+          url, 
+          type: 'video', 
+          description 
+        });
       } catch (err) {
-        console.error('Error uploading podcast:', err);
+        console.error('Error uploading video file:', file.name, err);
       }
     }
-    setPodcasts((prev) => [...newItems, ...prev]);
+    
+    console.log('Adding', newItems.length, 'new video items to state');
+    setVideos((prev) => [...newItems, ...prev]);
   };
 
   // Called when administrator clicks “Replace” on an item.
-  const onReplaceClick = (id: string, type: 'image' | 'podcast') => {
+  const onReplaceClick = (id: string, type: 'image' | 'video') => {
     // Set up accept and handler, then trigger hidden file input
-    setReplaceAccept(type === 'image' ? 'image/*' : 'audio/*');
+    setReplaceAccept(type === 'image' ? 'image/*' : 'video/*');
     replaceHandlerRef.current = async (file: File) => {
       await handleReplace(id, file, type);
     };
@@ -176,7 +252,7 @@ export default function AdminPage() {
       try {
         await replaceHandlerRef.current(files[0]);
       } catch (err) {
-        console.error('Error in replace handler:', err);
+        // Handle error - could show user notification
       }
     }
     // Reset input so selecting the same file later will still fire change
@@ -207,10 +283,10 @@ export default function AdminPage() {
         </Button>
       </Box>
 
-      {/* Tabs for Images vs. Podcasts */}
+      {/* Tabs for Images vs. Videos */}
       <Tabs value={tabIndex} onChange={(_, newIndex) => setTabIndex(newIndex)}>
         <Tab label="Images" />
-        <Tab label="Podcasts" />
+        <Tab label="Videos" />
       </Tabs>
 
       <Box mt={2}>
@@ -260,34 +336,37 @@ export default function AdminPage() {
                           variant="rounded"
                         />
                       </ListItemAvatar>
-                      <ListItemText primary={img.name} />
+                      <ListItemText 
+                        primary={img.description || 'No description'} 
+                        secondary={img.name}
+                      />
                     </ListItem>
                   ))}
                 </List>
               </Box>
             )}
 
-            {/* Podcasts Tab */}
+            {/* Videos Tab */}
             {tabIndex === 1 && (
               <Box>
-                <PodcastUploader onUpload={handlePodcastUpload} />
+                <VideoUploader onUpload={handleVideoUpload} />
                 <List>
-                  {podcasts.map((p) => (
+                  {videos.map((v) => (
                     <ListItem
-                      key={p.id}
+                      key={v.id}
                       secondaryAction={
                         <>
                           <IconButton
                             edge="end"
                             aria-label="replace"
-                            onClick={() => onReplaceClick(p.id, 'podcast')}
+                            onClick={() => onReplaceClick(v.id, 'video')}
                           >
                             <SwapHorizIcon />
                           </IconButton>
                           <IconButton
                             edge="end"
                             aria-label="delete"
-                            onClick={() => handleDelete(p.id, 'podcast')}
+                            onClick={() => handleDelete(v.id, 'video')}
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -297,7 +376,10 @@ export default function AdminPage() {
                       <ListItemAvatar>
                         <Avatar />
                       </ListItemAvatar>
-                      <ListItemText primary={p.name} />
+                      <ListItemText 
+                        primary={v.title || 'No title'} 
+                        secondary={v.name}
+                      />
                     </ListItem>
                   ))}
                 </List>

@@ -39,7 +39,7 @@ export default function PublicFaqPage() {
         });
         setFaqs(items);
       } catch (err) {
-        console.error('Error loading FAQs:', err);
+        // Handle error silently or show user-friendly message
       } finally {
         setLoading(false);
       }

@@ -69,7 +69,7 @@ export default function LocationPage() {
             align="center"
             sx={{ color: '#faf9f6', fontWeight: 600 }}
           >
-            Visit Our Hot Springs Showroom
+            Visit Our Hot Springs Village Showroom
           </Typography>
         </Container>
       </Box>
