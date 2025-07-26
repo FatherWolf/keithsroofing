@@ -133,13 +133,15 @@ export default function HomePage() {
         {...fadeUp}
         sx={{
           backgroundImage: `url(${heroImage})`,
-          backgroundSize: '120%',
-          backgroundPosition: 'center 30%',
+          backgroundSize: { xs: 'cover', md: '120%' },
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat',
           position: 'relative',
           width: '100vw',
           left: '50%',
           transform: 'translateX(-50%)',
-          height: { xs: '60vh', md: '75vh' },
+          height: { xs: '70vh', md: '75vh' },
+          minHeight: { xs: '500px', md: 'auto' },
           overflow: 'hidden',
         }}
       >
@@ -163,24 +165,47 @@ export default function HomePage() {
             justifyContent: 'center',
             textAlign: 'center',
             px: 2,
+            py: { xs: 4, md: 0 },
             color: theme.palette.text.primary,
           }}
         >
-          <Typography variant="h1" gutterBottom>
+          <Typography 
+            variant="h1" 
+            gutterBottom
+            sx={{
+              fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' },
+              lineHeight: { xs: 1.2, md: 1.1 },
+              mb: { xs: 2, md: 3 }
+            }}
+          >
             Keith's Roofing Arkansas
           </Typography>
-          <Typography variant="h5" gutterBottom>
+          <Typography 
+            variant="h5" 
+            gutterBottom
+            sx={{
+              fontSize: { xs: '1.1rem', sm: '1.25rem', md: '1.5rem' },
+              mb: { xs: 3, md: 4 },
+              maxWidth: '600px'
+            }}
+          >
             Premium Roofing Solutions for Arkansas Homeowners
           </Typography>
           <Button
             component={RouterLink}
             to="/contact"
             sx={{
-              mt: 2,
+              mt: { xs: 1, md: 2 },
+              mb: { xs: 2, md: 0 },
+              py: { xs: 1.5, md: 1.2 },
+              px: { xs: 3, md: 2.5 },
+              fontSize: { xs: '1rem', md: '1.1rem' },
               backgroundColor: theme.palette.secondary.main,
               color: '#fff',
               '&:hover': { backgroundColor: theme.palette.secondary.dark },
               textTransform: 'none',
+              minHeight: '48px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
             }}
           >
             Request a Free Estimate

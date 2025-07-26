@@ -57,14 +57,25 @@ Business site for keiths roofing
 
 ## Environment Variables
 
-This project relies on several API keys for Firebase and Google Maps. Copy
-`.env.example` to `.env` and fill in your credentials before running the app:
+This project relies on several API keys for Firebase, Google Maps, and EmailJS. 
+
+**For development:**
+1. Copy `.env.example` to `.env.local` 
+2. Fill in your actual API keys in `.env.local`
 
 ```bash
-cp .env.example .env
-# then edit .env and add your keys
+cp .env.example .env.local
+# then edit .env.local and add your real keys
 ```
 
-At a minimum you will need `REACT_APP_GOOGLE_MAPS_API_KEY` and
-`REACT_APP_GOOGLE_PLACE_ID` for the map and reviews components. Without these
-values Google Maps will fail to load.
+**For production deployment:**
+- Set environment variables directly in your hosting platform (Hostinger, Netlify, Vercel, etc.)
+- Never commit real API keys to git repositories
+
+**Required variables:**
+- `REACT_APP_FIREBASE_*` - Firebase configuration for authentication and data storage
+- `REACT_APP_GOOGLE_MAPS_API_KEY` - Google Maps for location and reviews
+- `REACT_APP_GOOGLE_PLACE_ID` - Google Place ID for reviews component  
+- `REACT_APP_EMAILJS_*` - EmailJS for contact form functionality
+
+**Note:** `.env.local` is gitignored for security. Only `.env.example` (with placeholder values) should be committed to version control.
